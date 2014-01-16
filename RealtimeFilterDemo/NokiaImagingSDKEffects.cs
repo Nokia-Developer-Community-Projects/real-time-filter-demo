@@ -359,7 +359,6 @@ namespace RealtimeFilterDemo
                         filters.Add(new RotationFilter(270)); 
                         filters.Add(new MirrorFilter());
                         filters.Add(new RotationFilter(90));
-                        
                     }
                     break;
 
@@ -367,6 +366,48 @@ namespace RealtimeFilterDemo
                     {
                         EffectName = String.Format(nameFormat, 31, "Custom MirrorEffect >>> Vertical");
                         _customEffect = new MirrorEffect(_cameraPreviewImageSource, MirrorEffect.MirrorType.Vertical);
+                    }
+                    break;
+
+                case 31:
+                    {
+                        EffectName = String.Format(nameFormat, 32, "Built-in GrayscaleFilter");
+                        filters.Add(new GrayscaleFilter());
+                    }
+                    break;
+
+                case 32:
+                    {
+                        EffectName = String.Format(nameFormat, 33, "Custom GrayscaleEffect");
+                        _customEffect = new GrayscaleEffect(_cameraPreviewImageSource);
+                    }
+                    break;
+
+                case 33:
+                    {
+                        EffectName = String.Format(nameFormat, 34, "Built-in GrayscaleNegativeFilter");
+                        filters.Add(new GrayscaleNegativeFilter());
+                    }
+                    break;
+
+                case 34:
+                    {
+                        EffectName = String.Format(nameFormat, 35, "Custom GrayscaleNegativeEffect");
+                        _customEffect = new GrayscaleNegativeEffect(_cameraPreviewImageSource);
+                    }
+                    break;
+
+                case 35:
+                    {
+                        EffectName = String.Format(nameFormat, 36, "Built-in NegativeFilter");
+                        filters.Add(new NegativeFilter());
+                    }
+                    break;
+
+                case 36:
+                    {
+                        EffectName = String.Format(nameFormat, 37, "Custom NegativeEffect");
+                        _customEffect = new NegativeEffect(_cameraPreviewImageSource);
                     }
                     break;
             }
@@ -380,6 +421,6 @@ namespace RealtimeFilterDemo
             }
         }
 
-        private int _effectCount = 31;
+        private int _effectCount = 37;
     }
 }

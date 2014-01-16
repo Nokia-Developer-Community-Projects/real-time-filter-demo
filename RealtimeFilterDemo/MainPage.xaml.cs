@@ -57,8 +57,6 @@ namespace RealtimeFilterDemo
             base.OnNavigatedTo(e);
 
             Initialize();
-
-            AdjustOrientation();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -137,6 +135,8 @@ namespace RealtimeFilterDemo
 
             _cameraEffect.PreviousEffect();
             StatusTextBlock.Text = _cameraEffect.EffectName;
+
+            AdjustOrientation();
         }
 
         private void Uninitialize()
