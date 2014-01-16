@@ -57,6 +57,8 @@ namespace RealtimeFilterDemo
             base.OnNavigatedTo(e);
 
             Initialize();
+
+            AdjustOrientation();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -74,6 +76,11 @@ namespace RealtimeFilterDemo
         {
             base.OnOrientationChanged(e);
 
+            AdjustOrientation();
+        }
+
+        private void AdjustOrientation()
+        {
             if (_photoCaptureDevice != null)
             {
                 double canvasAngle;
@@ -128,6 +135,7 @@ namespace RealtimeFilterDemo
 
             BackgroundVideoBrush.SetSource(_mediaElement);
 
+            _cameraEffect.PreviousEffect();
             StatusTextBlock.Text = _cameraEffect.EffectName;
         }
 

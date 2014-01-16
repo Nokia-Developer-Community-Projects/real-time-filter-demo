@@ -6,6 +6,7 @@
  * See LICENSE.TXT for license information.
  */
 
+using NISDKExtendedEffects.ImageEffects;
 using Nokia.Graphics.Imaging;
 using RealtimeFilterDemo.Resources;
 using System;
@@ -25,7 +26,6 @@ namespace RealtimeFilterDemo
         private FilterEffect _filterEffect = null;
         private CustomEffectBase _customEffect = null;
         private int _effectIndex = 0;
-        private int _effectCount = 11;
         private Semaphore _semaphore = new Semaphore(1, 1);
 
         public String EffectName { get; private set; }
@@ -226,6 +226,149 @@ namespace RealtimeFilterDemo
                         _customEffect = new CustomEffect(_cameraPreviewImageSource);
                     }
                     break;
+
+                case 11:
+                    {
+                        EffectName = String.Format(nameFormat, 12, "Built-in BrightnessFilter >>> +0.50");
+                        filters.Add(new BrightnessFilter(0.50));
+                    }
+                    break;
+
+                case 12:
+                    {
+                        EffectName = String.Format(nameFormat, 13, "Custom BrightnessEffect >>> +0.50");
+                        _customEffect = new BrightnessEffect(_cameraPreviewImageSource, 0.50);
+                    }
+                    break;
+
+                case 13:
+                    {
+                        EffectName = String.Format(nameFormat, 14, "Built-in BrightnessFilter >>> -0.50");
+                        filters.Add(new BrightnessFilter(-0.50));
+                    }
+                    break;
+
+                case 14:
+                    {
+                        EffectName = String.Format(nameFormat, 15, "Custom BrightnessEffect >>> -0.50");
+                        _customEffect = new BrightnessEffect(_cameraPreviewImageSource, -0.50);
+                    }
+                    break;
+
+                case 15:
+                    {
+                        EffectName = String.Format(nameFormat, 16, "Built-in ColorAdjustFilter >>> Red at -1.0");
+                        filters.Add(new ColorAdjustFilter(-1.0, 0, 0));
+                    }
+                    break;
+
+                case 16:
+                    {
+                        EffectName = String.Format(nameFormat, 17, "Custom ColorAdjustEffect >>> Red at -1.0");
+                        _customEffect = new ColorAdjustEffect(_cameraPreviewImageSource, -1.0, 0, 0);
+                    }
+                    break;
+
+                case 17:
+                    {
+                        EffectName = String.Format(nameFormat, 18, "Built-in ColorAdjustFilter >>> Red at +1.0");
+                        filters.Add(new ColorAdjustFilter(1.0, 0, 0));
+                    }
+                    break;
+
+                case 18:
+                    {
+                        EffectName = String.Format(nameFormat, 19, "Custom ColorAdjustEffect >>> Red at +1.0");
+                        _customEffect = new ColorAdjustEffect(_cameraPreviewImageSource, 1.0, 0, 0);
+                    }
+                    break;
+
+                case 19:
+                    {
+                        EffectName = String.Format(nameFormat, 20, "Built-in ColorAdjustFilter >>> Green at -1.0");
+                        filters.Add(new ColorAdjustFilter(0, -1.0, 0));
+                    }
+                    break;
+
+                case 20:
+                    {
+                        EffectName = String.Format(nameFormat, 21, "Custom ColorAdjustEffect >>> Green at -1.0");
+                        _customEffect = new ColorAdjustEffect(_cameraPreviewImageSource, 0, -1.0, 0);
+                    }
+                    break;
+
+                case 21:
+                    {
+                        EffectName = String.Format(nameFormat, 22, "Built-in ColorAdjustFilter >>> Green at +1.0");
+                        filters.Add(new ColorAdjustFilter(0, 1.0, 0));
+                    }
+                    break;
+
+                case 22:
+                    {
+                        EffectName = String.Format(nameFormat, 23, "Custom ColorAdjustEffect >>> Green at +1.0");
+                        _customEffect = new ColorAdjustEffect(_cameraPreviewImageSource, 0, 1.0, 0);
+                    }
+                    break;
+
+                case 23:
+                    {
+                        EffectName = String.Format(nameFormat, 24, "Built-in ColorAdjustFilter >>> Blue at -1.0");
+                        filters.Add(new ColorAdjustFilter(0, 0, -1.0));
+                    }
+                    break;
+
+                case 24:
+                    {
+                        EffectName = String.Format(nameFormat, 25, "Custom ColorAdjustEffect >>> Blue at -1.0");
+                        _customEffect = new ColorAdjustEffect(_cameraPreviewImageSource, 0, 0, -1.0);
+                    }
+                    break;
+
+                case 25:
+                    {
+                        EffectName = String.Format(nameFormat, 26, "Built-in ColorAdjustFilter >>> Blue at +1.0");
+                        filters.Add(new ColorAdjustFilter(0, 0, 1.0));
+                    }
+                    break;
+
+                case 26:
+                    {
+                        EffectName = String.Format(nameFormat, 27, "Custom ColorAdjustEffect >>> Blue at +1.0");
+                        _customEffect = new ColorAdjustEffect(_cameraPreviewImageSource, 0, 0, 1.0);
+                    }
+                    break;
+
+                case 27:
+                    {
+                        EffectName = String.Format(nameFormat, 28, "Built-in MirrorFilter");
+                        filters.Add(new MirrorFilter());
+                    }
+                    break;
+
+                case 28:
+                    {
+                        EffectName = String.Format(nameFormat, 29, "Custom MirrorEffect >>> Horizontal");
+                        _customEffect = new MirrorEffect(_cameraPreviewImageSource, MirrorEffect.MirrorType.Horizontal);
+                    }
+                    break;
+
+                case 29:
+                    {
+                        EffectName = String.Format(nameFormat, 30, "Built-in MirrorFilter and RotateFilter");
+                        filters.Add(new RotationFilter(270)); 
+                        filters.Add(new MirrorFilter());
+                        filters.Add(new RotationFilter(90));
+                        
+                    }
+                    break;
+
+                case 30:
+                    {
+                        EffectName = String.Format(nameFormat, 31, "Custom MirrorEffect >>> Vertical");
+                        _customEffect = new MirrorEffect(_cameraPreviewImageSource, MirrorEffect.MirrorType.Vertical);
+                    }
+                    break;
             }
 
             if (filters.Count > 0)
@@ -236,5 +379,7 @@ namespace RealtimeFilterDemo
                 };
             }
         }
+
+        private int _effectCount = 31;
     }
 }
