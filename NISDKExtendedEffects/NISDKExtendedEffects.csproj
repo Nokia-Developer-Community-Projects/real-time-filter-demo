@@ -91,6 +91,11 @@
     <Compile Include="ImageEffects\GrayscaleNegativeEffect.cs" />
     <Compile Include="ImageEffects\MirrorEffect.cs" />
     <Compile Include="ImageEffects\NegativeEffect.cs" />
+    <Compile Include="ImageEffects\NoEffect.cs" />
+    <Compile Include="ImageEffects\PixelationEffect.cs" />
+    <Compile Include="ImageEffects\PsychedelicEffect.cs" />
+    <Compile Include="ImageEffects\QuantizeColorEffect.cs" />
+    <Compile Include="ImageEffects\SkipPixelEffect.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

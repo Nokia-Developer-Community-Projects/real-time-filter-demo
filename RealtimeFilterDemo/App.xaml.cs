@@ -6,6 +6,9 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using RealtimeFilterDemo.Resources;
+using System.Collections.Generic;
+//using System.Windows.Media;
+using Windows.UI;
 
 namespace RealtimeFilterDemo
 {
@@ -16,6 +19,8 @@ namespace RealtimeFilterDemo
         /// </summary>
         /// <returns>The root frame of the Phone Application.</returns>
         public static PhoneApplicationFrame RootFrame { get; private set; }
+
+        public static Dictionary<uint, Color> AssignedColorCache;
 
         /// <summary>
         /// Constructor for the Application object.
@@ -33,6 +38,8 @@ namespace RealtimeFilterDemo
 
             // Language display initialization
             InitializeLanguage();
+
+            AssignedColorCache = new Dictionary<uint, Color>();
 
             // Show graphics profiling information while debugging.
             if (Debugger.IsAttached)

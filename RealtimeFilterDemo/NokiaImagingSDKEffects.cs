@@ -13,6 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+//using System.Windows.Media;
+using Windows.UI;
 using Windows.Foundation;
 using Windows.Phone.Media.Capture;
 using Windows.Storage.Streams;
@@ -147,6 +149,7 @@ namespace RealtimeFilterDemo
             var filters = new List<IFilter>();
             var nameFormat = "{0}/" + _effectCount + " - {1}";
 
+            App.AssignedColorCache = new Dictionary<uint, Color>(); // Reset
             _cameraPreviewImageSource = new CameraPreviewImageSource(_photoCaptureDevice);
 
             switch (_effectIndex)
@@ -410,6 +413,114 @@ namespace RealtimeFilterDemo
                         _customEffect = new NegativeEffect(_cameraPreviewImageSource);
                     }
                     break;
+
+                case 37:
+                    {
+                        EffectName = String.Format(nameFormat, 38, "PixelationEffect - Scale: 5");
+                        _customEffect = new PixelationEffect(_cameraPreviewImageSource, 5);
+                    }
+                    break;
+
+                case 38:
+                    {
+                        EffectName = String.Format(nameFormat, 39, "PixelationEffect - Scale: 15");
+                        _customEffect = new PixelationEffect(_cameraPreviewImageSource, 15);
+                    }
+                    break;
+
+                case 39:
+                    {
+                        EffectName = String.Format(nameFormat, 40, "PixelationEffect - Scale: 35");
+                        _customEffect = new PixelationEffect(_cameraPreviewImageSource, 35);
+                    }
+                    break;
+
+                case 40:
+                    {
+                        EffectName = String.Format(nameFormat, 41, "PsychedelicEffect - Factor: 25");
+                        _customEffect = new PsychedelicEffect(_cameraPreviewImageSource, 25);
+                    }
+                    break;
+
+                case 41:
+                    {
+                        EffectName = String.Format(nameFormat, 42, "PsychedelicEffect - Factor: 50");
+                        _customEffect = new PsychedelicEffect(_cameraPreviewImageSource, 50);
+                    }
+                    break;
+
+                case 42:
+                    {
+                        EffectName = String.Format(nameFormat, 43, "SkipPixelEffect - RowSkip: 3 | ColumnSkip: 3");
+                        _customEffect = new SkipPixelEffect(_cameraPreviewImageSource, 3, 3);
+                    }
+                    break;
+
+                case 43:
+                    {
+                        EffectName = String.Format(nameFormat, 44, "SkipPixelEffect - RowSkip: 8 | ColumnSkip: 8");
+                        _customEffect = new SkipPixelEffect(_cameraPreviewImageSource, 8, 8);
+                    }
+                    break;
+
+                case 44:
+                    {
+                        EffectName = String.Format(nameFormat, 45, "SkipPixelEffect - RowSkip: 13 | ColumnSkip: 13");
+                        _customEffect = new SkipPixelEffect(_cameraPreviewImageSource, 13, 13);
+                    }
+                    break;
+
+                case 45:
+                    {
+
+                        EffectName = String.Format(nameFormat, 46, "QuantizeColorEffect without Cache - 16 color");
+                        Dictionary<uint, Color> assignedColorCache = null;
+                        _customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref assignedColorCache);
+                    }
+                    break;
+
+                case 46:
+                    {
+                        EffectName = String.Format(nameFormat, 47, "QuantizeColorEffect with Cache - 16 color");
+                        _customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref App.AssignedColorCache);
+                    }
+                    break;
+
+                case 47:
+                    {
+                        List<Color> targetColors = new List<Color>();
+                        targetColors.Add(Color.FromArgb(255, 0, 0, 0)); // Black
+                        targetColors.Add(Color.FromArgb(255, 0, 0, 128)); // Low Blue (Navy)
+                        targetColors.Add(Color.FromArgb(255, 0, 128, 0)); // Low Green (Green)
+                        //targetColors.Add(Color.FromArgb(255, 0, 128, 128)); // Low Cyan (Teal)
+                        targetColors.Add(Color.FromArgb(255, 128, 0, 0)); // Low Red (Maroon)
+                        //targetColors.Add(Color.FromArgb(255, 128, 0, 128)); // Low Magenta (Purple)
+                        //targetColors.Add(Color.FromArgb(255, 128, 128, 0)); // Brown (Olive)
+                        //targetColors.Add(Color.FromArgb(255, 192, 192, 192)); // Light Gray (Silver)
+                        //targetColors.Add(Color.FromArgb(255, 169, 169, 169)); // Dark Gray (Gray)
+                        targetColors.Add(Color.FromArgb(255, 0, 0, 255)); // High Blue (Blue)
+                        targetColors.Add(Color.FromArgb(255, 0, 255, 0)); // High Green (Lime)
+                        targetColors.Add(Color.FromArgb(255, 0, 255, 255)); // High Cyan (Aqua)
+                        targetColors.Add(Color.FromArgb(255, 255, 0, 0)); // High Red (Red)
+                        targetColors.Add(Color.FromArgb(255, 255, 0, 255)); // High Magenta (Fuchsia)
+                        targetColors.Add(Color.FromArgb(255, 255, 165, 0)); // Orange
+                        targetColors.Add(Color.FromArgb(255, 255, 255, 0)); // Yellow
+                        targetColors.Add(Color.FromArgb(255, 255, 255, 255)); // White
+
+                        EffectName = String.Format(nameFormat, 48, "QuantizeColorEffect with Cache - Custom Colors");
+                        _customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref App.AssignedColorCache, targetColors);
+
+                        // Experimenting - creating MagicPen effect
+                        //filters.Add(new SketchFilter(SketchMode.Color));
+                        //filters.Add(new SharpnessFilter(7));
+                        //filters.Add(new DespeckleFilter(DespeckleLevel.High));
+                        //filters.Add(new SketchFilter(SketchMode.Gray));
+
+                        //IImageProvider imageEffect = new FilterEffect(_cameraPreviewImageSource) { Filters = new List<IFilter>() { new SketchFilter(SketchMode.Color) } };
+                        //_customEffect = new QuantizeColorEffect(imageEffect, ref App.AssignedColorCache, targetColors);
+                    }
+                    break;
+
             }
 
             if (filters.Count > 0)
@@ -421,6 +532,6 @@ namespace RealtimeFilterDemo
             }
         }
 
-        private int _effectCount = 37;
+        private int _effectCount = 48;  // Remember to increment by one with each case added above.
     }
 }

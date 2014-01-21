@@ -186,6 +186,7 @@ namespace RealtimeFilterDemo
         private void CameraStreamSource_FPSChanged(object sender, int e)
         {
             FrameRateTextBlock.Text = String.Format(AppResources.MainPage_FrameRateTextBlock_Format, e);
+            //StatusTextBlock.Text = string.Concat("QuantizeColorEffect with Cache count: ", App.AssignedColorCache.Count);
         }
 
         private async void LayoutRoot_Tap(object sender, System.Windows.Input.GestureEventArgs e)
