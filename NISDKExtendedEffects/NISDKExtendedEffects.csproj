@@ -95,6 +95,7 @@
     <Compile Include="ImageEffects\PixelationEffect.cs" />
     <Compile Include="ImageEffects\PsychedelicEffect.cs" />
     <Compile Include="ImageEffects\QuantizeColorEffect.cs" />
+    <Compile Include="ImageEffects\SepiaEffect.cs" />
     <Compile Include="ImageEffects\SkipPixelEffect.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

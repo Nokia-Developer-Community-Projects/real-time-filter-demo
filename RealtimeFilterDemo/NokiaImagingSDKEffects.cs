@@ -521,6 +521,20 @@ namespace RealtimeFilterDemo
                     }
                     break;
 
+                case 48:
+                    {
+                        EffectName = String.Format(nameFormat, 49, "Built-in SepiaFilter");
+                        filters.Add(new SepiaFilter());
+                    }
+                    break;
+
+                case 49:
+                    {
+                        EffectName = String.Format(nameFormat, 50, "Custom SepiaEffect");
+                        _customEffect = new SepiaEffect(_cameraPreviewImageSource);
+                    }
+                    break;
+
             }
 
             if (filters.Count > 0)
@@ -532,6 +546,6 @@ namespace RealtimeFilterDemo
             }
         }
 
-        private int _effectCount = 48;  // Remember to increment by one with each case added above.
+        private int _effectCount = 50;  // Remember to increment by one with each case added above.
     }
 }

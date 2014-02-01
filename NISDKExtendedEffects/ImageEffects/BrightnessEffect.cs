@@ -1,5 +1,6 @@
-﻿// NOTE: The built-in BrightnessFilter() is 3 times faster than this.  This was simply created to show the 
+﻿// NOTE: The built-in BrightnessFilter() is more than twice as fast as this.  This was simply created to show the 
 //       logic that can be used to achieve an effect that allows adjusting the brightness of an image.
+//       Lumia 920 - 16-17 FPS with BrightnessFilter() vs 7-8 FPS with BrightnessEffect()
 
 using Nokia.Graphics.Imaging;
 using System;
@@ -35,22 +36,22 @@ namespace NISDKExtendedEffects.ImageEffects
                         // Dimming the image - A value of -1 or -100%, will completely reduce all colors to 0
                         // Reduce each color component by the passed in percentage of the amount of color
                         // it is currently displaying.
-                        red = (uint)Math.Max(0, Math.Min(255, (red + (red * m_BrightnessPercentage))));
-                        green = (uint)Math.Max(0, Math.Min(255, (green + (green * m_BrightnessPercentage))));
-                        blue = (uint)Math.Max(0, Math.Min(255, (blue + (blue * m_BrightnessPercentage))));
+                        red = (uint)Math.Max(0, (red + (red * m_BrightnessPercentage)));
+                        green = (uint)Math.Max(0, (green + (green * m_BrightnessPercentage)));
+                        blue = (uint)Math.Max(0, (blue + (blue * m_BrightnessPercentage)));
                     }
                     else
                     {
                         // Brightening the image - A value of 1 or 100%, will completely increase all colors to 255
                         // Increase each color component by the passed in percentage of the amount of color
                         // is has left before it reaches the max of 255.
-                        red = (uint)Math.Max(0, Math.Min(255, (red + ((255 - red) * m_BrightnessPercentage))));
-                        green = (uint)Math.Max(0, Math.Min(255, (green + ((255 - green) * m_BrightnessPercentage))));
-                        blue = (uint)Math.Max(0, Math.Min(255, (blue + ((255 - blue) * m_BrightnessPercentage))));
+                        red = (uint)Math.Min(255, (red + ((255 - red) * m_BrightnessPercentage)));
+                        green = (uint)Math.Min(255, (green + ((255 - green) * m_BrightnessPercentage)));
+                        blue = (uint)Math.Min(255, (blue + ((255 - blue) * m_BrightnessPercentage)));
                     }
 
-                    uint newPixel = 0xff000000 | (red << 16) | (green << 8) | blue; // reassembling each component back into a pixel
-                    targetPixels[index] = newPixel; // assign the newPixel to the equivalent location in the output image
+                    // Reassembling each component back into a pixel for the target pixel location
+                    targetPixels[index] = 0xff000000 | (red << 16) | (green << 8) | blue; 
                 }
             });
         }

@@ -1,5 +1,5 @@
-﻿<xapCache source="C:\C\Git\real-time-filter-demo\RealtimeFilterDemo\Bin\ARM\Debug\RealtimeFilterDemo.xap" wasSigned="False" wasTritonized="False" certificateThumbprint="" TimeStampUrl="" signKeyFile="" signKeyPassword="" lastWriteTime="1/20/2014 9:15:40 PM">
-  <file source="C:\C\Git\real-time-filter-demo\RealtimeFilterDemo\obj\ARM\Debug\RealtimeFilterDemo.dll" archivePath="RealtimeFilterDemo.dll" lastWriteTime="1/20/2014 9:15:37 PM" />
+﻿<xapCache source="C:\C\Git\real-time-filter-demo\RealtimeFilterDemo\Bin\ARM\Debug\RealtimeFilterDemo.xap" wasSigned="False" wasTritonized="False" certificateThumbprint="" TimeStampUrl="" signKeyFile="" signKeyPassword="" lastWriteTime="2/1/2014 2:48:07 PM">
+  <file source="C:\C\Git\real-time-filter-demo\RealtimeFilterDemo\obj\ARM\Debug\RealtimeFilterDemo.dll" archivePath="RealtimeFilterDemo.dll" lastWriteTime="2/1/2014 2:48:04 PM" />
   <file source="C:\C\Git\real-time-filter-demo\RealtimeFilterDemo\Assets\AlignmentGrid.png" archivePath="Assets\AlignmentGrid.png" lastWriteTime="1/16/2014 1:20:28 AM" />
   <file source="C:\C\Git\real-time-filter-demo\RealtimeFilterDemo\Assets\Icons\previous.png" archivePath="Assets\Icons\previous.png" lastWriteTime="1/16/2014 1:20:28 AM" />
   <file source="C:\C\Git\real-time-filter-demo\RealtimeFilterDemo\Assets\Icons\next.png" archivePath="Assets\Icons\next.png" lastWriteTime="1/16/2014 1:20:28 AM" />
@@ -14,7 +14,7 @@
   <file source="C:\C\Git\real-time-filter-demo\RealtimeFilterDemo\Bin\ARM\Debug\Assets\Tiles\FlipCycleTileSmall.png" archivePath="Assets\Tiles\FlipCycleTileSmall.png" lastWriteTime="1/16/2014 1:20:28 AM" />
   <file source="C:\C\Git\real-time-filter-demo\RealtimeFilterDemo\Bin\ARM\Debug\Assets\Tiles\IconicTileMediumLarge.png" archivePath="Assets\Tiles\IconicTileMediumLarge.png" lastWriteTime="1/16/2014 1:20:28 AM" />
   <file source="C:\C\Git\real-time-filter-demo\RealtimeFilterDemo\Bin\ARM\Debug\Assets\Tiles\IconicTileSmall.png" archivePath="Assets\Tiles\IconicTileSmall.png" lastWriteTime="1/16/2014 1:20:28 AM" />
-  <file source="C:\C\Git\real-time-filter-demo\NISDKExtendedEffects\Bin\ARM\Debug\NISDKExtendedEffects.dll" archivePath="NISDKExtendedEffects.dll" lastWriteTime="1/20/2014 9:15:36 PM" />
+  <file source="C:\C\Git\real-time-filter-demo\NISDKExtendedEffects\Bin\ARM\Debug\NISDKExtendedEffects.dll" archivePath="NISDKExtendedEffects.dll" lastWriteTime="2/1/2014 2:48:03 PM" />
   <file source="C:\C\Git\real-time-filter-demo\packages\NokiaImagingSDK.1.0.272.0\lib\wp8\Nokia.Graphics.Imaging.Managed.dll" archivePath="Nokia.Graphics.Imaging.Managed.dll" lastWriteTime="1/16/2014 1:20:28 AM" />
   <file source="C:\C\Git\real-time-filter-demo\packages\NokiaImagingSDK.1.0.272.0\lib\wp8\ARM\Nokia.Graphics.Imaging.winmd" archivePath="Nokia.Graphics.Imaging.winmd" lastWriteTime="1/16/2014 1:20:28 AM" />
   <file source="C:\C\Git\real-time-filter-demo\packages\NokiaImagingSDK.1.0.272.0\lib\wp8\ARM\Nokia.InteropServices.WindowsRuntime.winmd" archivePath="Nokia.InteropServices.WindowsRuntime.winmd" lastWriteTime="1/16/2014 1:20:28 AM" />
@@ -25,5 +25,5 @@
   <file source="C:\C\Git\real-time-filter-demo\packages\NokiaImagingSDK.1.0.272.0\lib\wp8\ARM\Nokia.InteropServices.WindowsRuntime.xml" archivePath="Nokia.InteropServices.WindowsRuntime.xml" lastWriteTime="1/16/2014 1:20:28 AM" />
   <file source="C:\C\Git\real-time-filter-demo\RealtimeFilterDemo\Assets\ApplicationIcon.png" archivePath="Assets\ApplicationIcon.png" lastWriteTime="1/16/2014 1:20:28 AM" />
   <file source="C:\C\Git\real-time-filter-demo\RealtimeFilterDemo\Assets\Tiles\FlipCycleTileMedium.png" archivePath="Assets\Tiles\FlipCycleTileMedium.png" lastWriteTime="1/16/2014 1:20:28 AM" />
-  <file source="C:\C\Git\real-time-filter-demo\RealtimeFilterDemo\Bin\ARM\Debug\Properties\WMAppManifest.xml" archivePath="WMAppManifest.xml" lastWriteTime="1/16/2014 1:20:28 AM" />
+  <file source="C:\C\Git\real-time-filter-demo\RealtimeFilterDemo\Bin\ARM\Debug\Properties\WMAppManifest.xml" archivePath="WMAppManifest.xml" lastWriteTime="2/1/2014 2:41:03 PM" />
 </xapCache>
