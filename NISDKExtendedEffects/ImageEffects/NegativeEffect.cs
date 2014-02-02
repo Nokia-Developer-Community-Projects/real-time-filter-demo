@@ -1,23 +1,27 @@
 ﻿using Nokia.Graphics.Imaging;
 using System;
- 
-public class NegativeEffect : CustomEffectBase
+
+namespace NISDKExtendedEffects.ImageEffects
 {
-    public NegativeEffect(IImageProvider source) : base(source)
+    public class NegativeEffect : CustomEffectBase
     {
-    }
- 
-    protected override void OnProcess(PixelRegion sourcePixelRegion, PixelRegion targetPixelRegion)
-    {
-        var sourcePixels = sourcePixelRegion.ImagePixels;
-        var targetPixels = targetPixelRegion.ImagePixels;
- 
-        sourcePixelRegion.ForEachRow((index, width, position) =>
+        public NegativeEffect(IImageProvider source)
+            : base(source)
         {
-            for (int x = 0; x < width; ++x, ++index)
+        }
+
+        protected override void OnProcess(PixelRegion sourcePixelRegion, PixelRegion targetPixelRegion)
+        {
+            var sourcePixels = sourcePixelRegion.ImagePixels;
+            var targetPixels = targetPixelRegion.ImagePixels;
+
+            sourcePixelRegion.ForEachRow((index, width, position) =>
             {
-                targetPixels[index] = ~sourcePixels[index];
-            }
-        });
+                for (int x = 0; x < width; ++x, ++index)
+                {
+                    targetPixels[index] = ~sourcePixels[index];
+                }
+            });
+        }
     }
 }
