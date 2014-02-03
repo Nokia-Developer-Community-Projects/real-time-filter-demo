@@ -535,6 +535,28 @@ namespace RealtimeFilterDemo
                     }
                     break;
 
+                case 50:
+                    {
+                        EffectName = String.Format(nameFormat, 51, "Built-in GrayscaleFilter");
+                        filters.Add(new GrayscaleFilter());
+                    }
+                    break;
+
+                case 51:
+                    {
+                        EffectName = String.Format(nameFormat, 52, "Custom GrayscaleEffect");
+                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource);
+                        _customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.2126, 0.7152, 0.0722); // Defined Algo 1 - Default
+                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.299, 0.587, 0.114); // Defined Algo 2
+                        //Experiments:
+                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.3333, 0.3333, 0.3333);
+                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.3990, 0.3870, 0.2140);
+                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.3126, 0.5152, 0.0722); // very close to SDK
+                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.2276, 0.7152, 0.0822);
+                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.2526, 0.6652, 0.0822);
+                    }
+                    break;
+
             }
 
             if (filters.Count > 0)
@@ -546,6 +568,6 @@ namespace RealtimeFilterDemo
             }
         }
 
-        private int _effectCount = 50;  // Remember to increment by one with each case added above.
+        private int _effectCount = 52;  // Remember to increment by one with each case added above.
     }
 }

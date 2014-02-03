@@ -1,4 +1,10 @@
-﻿using Nokia.Graphics.Imaging;
+﻿// ============================================================================
+// DATE        AUTHOR                   DESCRIPTION
+// ----------  -----------------------  ---------------------------------------
+// 2014.01.20  Rob.Kachmar              Initial creation
+// ============================================================================
+
+using Nokia.Graphics.Imaging;
 using System;
 using System.Collections.Generic;
 using Windows.UI;

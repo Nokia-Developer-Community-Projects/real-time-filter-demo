@@ -1,4 +1,10 @@
-﻿using System;
+﻿// ============================================================================
+// DATE        AUTHOR                   DESCRIPTION
+// ----------  -----------------------  ---------------------------------------
+// 2014.01.20  Rob.Kachmar              Initial creation
+// ============================================================================
+
+using System;
 using Nokia.Graphics.Imaging;
 
 namespace NISDKExtendedEffects.ImageEffects

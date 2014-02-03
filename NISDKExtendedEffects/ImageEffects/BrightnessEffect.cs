@@ -1,6 +1,16 @@
-﻿// NOTE: The built-in BrightnessFilter() is more than twice as fast as this.  This was simply created to show the 
-//       logic that can be used to achieve an effect that allows adjusting the brightness of an image.
-//       Lumia 920 - 16-17 FPS with BrightnessFilter() vs 7-8 FPS with BrightnessEffect()
+﻿// ============================================================================
+// DATE        AUTHOR                   DESCRIPTION
+// ----------  -----------------------  ---------------------------------------
+// 2014.01.15  Rob.Kachmar              Initial creation
+// 2014.02.01  Rob.Kachmar              Reducing Math calc for performance
+// ============================================================================
+// NOTE: The built-in BrightnessFilter() is more than twice as fast as this.  
+//       This was simply created to show the logic that can be used to achieve 
+//       an effect that allows adjusting the brightness of an image.
+//       Lumia 920 - 16-17 FPS with BrightnessFilter() 
+//                   vs 
+//                   7-8 FPS with BrightnessEffect()
+// ============================================================================
 
 using Nokia.Graphics.Imaging;
 using System;

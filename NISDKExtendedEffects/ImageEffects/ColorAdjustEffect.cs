@@ -1,5 +1,12 @@
-﻿// NOTE: The built-in ColorAdjustFilter() is 3 times faster than this.  This was simply created to show the 
-//       logic that can be used to achieve an effect that allows adjusting the color components of an image.
+﻿// ============================================================================
+// DATE        AUTHOR                   DESCRIPTION
+// ----------  -----------------------  ---------------------------------------
+// 2014.01.15  Rob.Kachmar              Initial creation
+// ============================================================================
+// NOTE: The built-in ColorAdjustFilter() is 3 times faster than this. It was 
+//       simply created to show the logic that can be used to achieve an effect
+//       that allows adjusting the color components of an image.
+// ============================================================================
 
 using Nokia.Graphics.Imaging;
 using System;
