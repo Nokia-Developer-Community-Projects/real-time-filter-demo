@@ -14,7 +14,9 @@
 
 Check out our installation guide at : http://developer.nokia.com/Resources/Library/Lumia/#!nokia-imaging-sdk/adding-libraries-to-the-project.html</description>
     <summary>Nokia Imaging SDK has more than 50 filters that have been specifically developed for mobile imaging, with speed and memory performance as key drivers.</summary>
+    <releaseNotes />
     <copyright>Copyright (c) 2012-2013, Nokia. All rights reserved.</copyright>
+    <language />
     <tags>Nokia Imaging NokiaImagingSDK WindowsPhone wp8</tags>
     <references>
       <group targetFramework="WindowsPhone8.0">
