@@ -220,6 +220,8 @@ namespace RealtimeFilterDemo
                 case 9:
                     {
                         EffectName = String.Format(nameFormat, 10, AppResources.Filter_None);
+                        // Runs at 18 FPS with NoEffect and 18-19 FPS with nothing at all, so NoEffect() costs about 0.5 FPS
+                        _customEffect = new NoEffect(_cameraPreviewImageSource);
                     }
                     break;
 
@@ -554,6 +556,19 @@ namespace RealtimeFilterDemo
                         //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.3126, 0.5152, 0.0722); // very close to SDK
                         //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.2276, 0.7152, 0.0822);
                         //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.2526, 0.6652, 0.0822);
+
+                        //EffectName = String.Format(nameFormat, 52, "Built-in WarpFilter");
+                        //filters.Add(new WarpFilter(WarpEffect.HappyFool, 0.5)); // 10-11 FPS
+                        //filters.Add(new WarpFilter(WarpEffect.Twister, 0.5));
+
+                        //EffectName = String.Format(nameFormat, 52, "Custom PsychedelicEffect with WarpEffect.Twister");
+                        ////_customEffect = new PsychedelicEffect(_cameraPreviewImageSource);
+                        //IImageProvider imageEffect = new FilterEffect(_cameraPreviewImageSource)
+                        //{
+                        //    Filters = new List<IFilter>() { new WarpFilter(WarpEffect.Twister, 0.50) }
+                        //};
+                        //_customEffect = new PsychedelicEffect(imageEffect);
+                        
                     }
                     break;
 
