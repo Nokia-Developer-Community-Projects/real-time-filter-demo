@@ -17,12 +17,6 @@ namespace NISDKExtendedEffects.ImageEffects
         public PsychedelicEffect(IImageProvider source, byte factor = 50) : base(source)
         {
             m_factor = factor;
-
-            //source = new FilterEffect(source)
-            //{
-            //    Filters = new List<IFilter>() { 
-            //    new WarpFilter(WarpEffect.Twister, 0.50) } 
-            //};
         }
 
         protected override void OnProcess(PixelRegion sourcePixelRegion, PixelRegion targetPixelRegion)
@@ -50,13 +44,10 @@ namespace NISDKExtendedEffects.ImageEffects
                     green = (green < m_factor ? 255 : green - m_factor);
                     blue = (blue < m_factor ? 255 : blue - m_factor);
 
-
                     // Reassemble each component back into a pixel and assign it to the equivalent output image location
                     targetPixels[index] = 0xff000000 | (red << 16) | (green << 8) | blue;
                 }
             });
         }
     }
-
-
 }

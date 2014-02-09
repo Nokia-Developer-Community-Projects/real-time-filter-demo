@@ -45,6 +45,10 @@ namespace StaticFilterViewer
                 var resource = App.GetResourceStream(new Uri(string.Concat("Pictures/", pictureName), UriKind.Relative));
                 using (var imageStream = new StreamImageSource(resource.Stream))
                 {
+                    // Applying an inbuilt filter and a custom effect to the image stream
+                    //IImageProvider imageEffect = new FilterEffect(imageStream) { Filters = new List<IFilter>() { new WarpFilter(WarpEffect.Twister, 0.50) } };
+                    //using (var customEffect = new PsychedelicEffect(imageEffect, 50))
+
                     // Applying the custom filter effect to the image stream
                     //using (var customEffect = new MirrorEffect(imageStream, MirrorEffect.MirrorType.Vertical))
                     using (var customEffect = new NegativeEffect(imageStream))

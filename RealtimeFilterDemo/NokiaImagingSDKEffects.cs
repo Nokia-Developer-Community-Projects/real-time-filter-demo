@@ -439,15 +439,24 @@ namespace RealtimeFilterDemo
 
                 case 40:
                     {
-                        EffectName = String.Format(nameFormat, 41, "PsychedelicEffect - Factor: 25");
-                        _customEffect = new PsychedelicEffect(_cameraPreviewImageSource, 25);
+                        EffectName = String.Format(nameFormat, 42, "PsychedelicEffect - Factor: 25 with WarpEffect.Twister - 0.50");
+                        IImageProvider imageEffect = new FilterEffect(_cameraPreviewImageSource)
+                        {
+                            Filters = new List<IFilter>() { new WarpFilter(WarpEffect.Twister, 0.50) }
+                        };
+                        _customEffect = new PsychedelicEffect(imageEffect, 25);
                     }
                     break;
 
                 case 41:
                     {
-                        EffectName = String.Format(nameFormat, 42, "PsychedelicEffect - Factor: 50");
-                        _customEffect = new PsychedelicEffect(_cameraPreviewImageSource, 50);
+                        EffectName = String.Format(nameFormat, 42, "PsychedelicEffect - Factor: 50 with WarpEffect.Twister - 0.50");
+                        IImageProvider imageEffect = new FilterEffect(_cameraPreviewImageSource)
+                        {
+                            Filters = new List<IFilter>() { new WarpFilter(WarpEffect.Twister, 0.50) }
+                        };
+                        _customEffect = new PsychedelicEffect(imageEffect, 50);
+
                     }
                     break;
 
@@ -532,24 +541,40 @@ namespace RealtimeFilterDemo
 
                 case 49:
                     {
-                        EffectName = String.Format(nameFormat, 50, "Custom SepiaEffect");
-                        _customEffect = new SepiaEffect(_cameraPreviewImageSource);
+                        EffectName = String.Format(nameFormat, 50, "Custom SepiaEffect - 0.42 (default)");
+                        _customEffect = new SepiaEffect(_cameraPreviewImageSource, 0.42);
                     }
                     break;
 
                 case 50:
                     {
-                        EffectName = String.Format(nameFormat, 51, "Built-in GrayscaleFilter");
-                        filters.Add(new GrayscaleFilter());
+                        EffectName = String.Format(nameFormat, 51, "Custom SepiaEffect - 0.32");
+                        _customEffect = new SepiaEffect(_cameraPreviewImageSource, 0.32);
                     }
                     break;
 
                 case 51:
                     {
-                        EffectName = String.Format(nameFormat, 52, "Custom GrayscaleEffect");
+                        EffectName = String.Format(nameFormat, 52, "Custom SepiaEffect - 0.62");
+                        _customEffect = new SepiaEffect(_cameraPreviewImageSource, 0.62);
+                    }
+                    break;
+
+                case 52:
+                    {
+                        EffectName = String.Format(nameFormat, 53, "Built-in GrayscaleFilter");
+                        filters.Add(new GrayscaleFilter());
+                    }
+                    break;
+
+                case 53:
+                    {
+                        EffectName = String.Format(nameFormat, 54, "Custom GrayscaleEffect");
                         //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource);
-                        _customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.2126, 0.7152, 0.0722); // Defined Algo 1 - Default
+                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.2126, 0.7152, 0.0722); // Defined Algo 1 - Default
+                        _customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.212671, 0.71516, 0.072169); // CIE Y Algo
                         //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.299, 0.587, 0.114); // Defined Algo 2
+                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.241, 0.691, 0.068, true); // Defined Algo 3
                         //Experiments:
                         //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.3333, 0.3333, 0.3333);
                         //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.3990, 0.3870, 0.2140);
@@ -560,14 +585,6 @@ namespace RealtimeFilterDemo
                         //EffectName = String.Format(nameFormat, 52, "Built-in WarpFilter");
                         //filters.Add(new WarpFilter(WarpEffect.HappyFool, 0.5)); // 10-11 FPS
                         //filters.Add(new WarpFilter(WarpEffect.Twister, 0.5));
-
-                        //EffectName = String.Format(nameFormat, 52, "Custom PsychedelicEffect with WarpEffect.Twister");
-                        ////_customEffect = new PsychedelicEffect(_cameraPreviewImageSource);
-                        //IImageProvider imageEffect = new FilterEffect(_cameraPreviewImageSource)
-                        //{
-                        //    Filters = new List<IFilter>() { new WarpFilter(WarpEffect.Twister, 0.50) }
-                        //};
-                        //_customEffect = new PsychedelicEffect(imageEffect);
                         
                     }
                     break;
@@ -583,6 +600,6 @@ namespace RealtimeFilterDemo
             }
         }
 
-        private int _effectCount = 52;  // Remember to increment by one with each case added above.
+        private int _effectCount = 54;  // Remember to increment by one with each case added above.
     }
 }
