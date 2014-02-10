@@ -38,45 +38,50 @@ namespace NISDKExtendedEffects.ImageEffects
                 {
                     // 16-17 FPS with built-in GrayscaleFilter() and 11 FPS with this technique on Lumia 920
                     uint currentPixel = sourcePixels[index]; // get the current pixel
-                    uint red = (currentPixel & 0x00ff0000) >> 16; // red color component
-                    uint green = (currentPixel & 0x0000ff00) >> 8; // green color component
-                    uint blue = currentPixel & 0x000000ff; // blue color component
-                    uint grayscaleAverage = 0;
+                    uint alpha = (currentPixel & 0xff000000) >> 24; // alpha component
 
-                    // Calculate the weighted avearge of all the color components
-                    // REFERENCES: 
-                    //      http://en.wikipedia.org/wiki/Grayscale
-                    //      http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0029740
-                    //      http://vcg.isti.cnr.it/~corsini/publications/grayscale_matching_preprint.pdf
-
-                    if (m_SquareCalc) // You drop down 1 FPS to 7-8 FPS using the square calc method
+                    if (!alpha.Equals(0)) // Only process if it is not transparent
                     {
-                        grayscaleAverage = (uint)Math.Max(0, Math.Min(255, (
-                            Math.Sqrt((m_RedPercentage * red) * (m_RedPercentage * red) +
-                            (m_GreenPercentage * green) * (m_GreenPercentage * green) +
-                            (m_BluePercentage * blue) * (m_BluePercentage * blue)
-                            ))));
+                        uint red = (currentPixel & 0x00ff0000) >> 16; // red color component
+                        uint green = (currentPixel & 0x0000ff00) >> 8; // green color component
+                        uint blue = currentPixel & 0x000000ff; // blue color component
+                        uint grayscaleAverage = 0;
+
+                        // Calculate the weighted avearge of all the color components
+                        // REFERENCES: 
+                        //      http://en.wikipedia.org/wiki/Grayscale
+                        //      http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0029740
+                        //      http://vcg.isti.cnr.it/~corsini/publications/grayscale_matching_preprint.pdf
+
+                        if (m_SquareCalc) // You drop down 1 FPS to 7-8 FPS using the square calc method
+                        {
+                            grayscaleAverage = (uint)Math.Max(0, Math.Min(255, (
+                                Math.Sqrt((m_RedPercentage * red) * (m_RedPercentage * red) +
+                                (m_GreenPercentage * green) * (m_GreenPercentage * green) +
+                                (m_BluePercentage * blue) * (m_BluePercentage * blue)
+                                ))));
+                        }
+                        else
+                        {
+                            grayscaleAverage = (uint)Math.Max(0, Math.Min(255, (
+                                (m_RedPercentage * red) +
+                                (m_GreenPercentage * green) +
+                                (m_BluePercentage * blue)
+                                )));
+
+                            //grayscaleAverage = (uint)(red * 0.33 + green * 0.50 + blue * 0.16); // accurate approximation algo
+                            //grayscaleAverage = (red + red + blue + green + green + green) / 6; // less accurate approximation algo
+
+                            //grayscaleAverage = (uint)(red * 0.375 + green * 0.50 + blue * 0.125); // less accurate approximation algo 2
+                            //grayscaleAverage = (red + red + red + blue + green + green + green + green) >> 3; // less accurate approximation algo 2
+                        }
+
+                        // Assign the result to each component
+                        red = green = blue = grayscaleAverage;
+
+                        // Reassembling each component back into a pixel for the target pixel location
+                        targetPixels[index] = (alpha << 24) | (red << 16) | (green << 8) | blue; 
                     }
-                    else
-                    {
-                        grayscaleAverage = (uint)Math.Max(0, Math.Min(255, (
-                            (m_RedPercentage * red) +
-                            (m_GreenPercentage * green) +
-                            (m_BluePercentage * blue)
-                            )));
-
-                        //grayscaleAverage = (uint)(red * 0.33 + green * 0.50 + blue * 0.16); // accurate approximation algo
-                        //grayscaleAverage = (red + red + blue + green + green + green) / 6; // less accurate approximation algo
-
-                        //grayscaleAverage = (uint)(red * 0.375 + green * 0.50 + blue * 0.125); // less accurate approximation algo 2
-                        //grayscaleAverage = (red + red + red + blue + green + green + green + green) >> 3; // less accurate approximation algo 2
-                    }
-
-                    // Assign the result to each component
-                    red = green = blue = grayscaleAverage;
-
-                    uint newPixel = 0xff000000 | (red << 16) | (green << 8) | blue; // reassembling each component back into a pixel
-                    targetPixels[index] = newPixel; // assign the newPixel to the equivalent location in the output image
                 }
             });
         }

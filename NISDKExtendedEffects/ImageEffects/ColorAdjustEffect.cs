@@ -37,19 +37,24 @@ namespace NISDKExtendedEffects.ImageEffects
                 for (int x = 0; x < width; ++x, ++index)
                 {
                     uint currentPixel = sourcePixels[index]; // get the current pixel
-                    uint red = (currentPixel & 0x00ff0000) >> 16; // red color component
-                    uint green = (currentPixel & 0x0000ff00) >> 8; // green color component
-                    uint blue = currentPixel & 0x000000ff; // blue color component
+                    uint alpha = (currentPixel & 0xff000000) >> 24; // alpha component
 
-                    // Take the percentage of each color component and add it to itself
-                    // ex. A -1.0 or -100% will completely reduce a color component to 0
-                    // ex. A 1.0 or 100% will double the value of the color component, up to the maximum of 255 of course
-                    red = (uint)Math.Max(0, Math.Min(255, (red + (red * m_RedPercentage))));
-                    green = (uint)Math.Max(0, Math.Min(255, (green + (green * m_GreenPercentage))));
-                    blue = (uint)Math.Max(0, Math.Min(255, (blue + (blue * m_BluePercentage))));
+                    if (!alpha.Equals(0)) // Only process if it is not transparent
+                    {
+                        uint red = (currentPixel & 0x00ff0000) >> 16; // red color component
+                        uint green = (currentPixel & 0x0000ff00) >> 8; // green color component
+                        uint blue = currentPixel & 0x000000ff; // blue color component
 
-                    uint newPixel = 0xff000000 | (red << 16) | (green << 8) | blue; // reassembling each component back into a pixel
-                    targetPixels[index] = newPixel; // assign the newPixel to the equivalent location in the output image
+                        // Take the percentage of each color component and add it to itself
+                        // ex. A -1.0 or -100% will completely reduce a color component to 0
+                        // ex. A 1.0 or 100% will double the value of the color component, up to the maximum of 255 of course
+                        red = (uint)Math.Max(0, Math.Min(255, (red + (red * m_RedPercentage))));
+                        green = (uint)Math.Max(0, Math.Min(255, (green + (green * m_GreenPercentage))));
+                        blue = (uint)Math.Max(0, Math.Min(255, (blue + (blue * m_BluePercentage))));
+
+                        // Reassembling each component back into a pixel for the target pixel location
+                        targetPixels[index] = (alpha << 24) | (red << 16) | (green << 8) | blue; 
+                    }
                 }
             });
         }

@@ -42,6 +42,7 @@ namespace NISDKExtendedEffects.ImageEffects
                         if ((x % m_ProcessEveryNthColumn).Equals(m_ColumnModuloTarget)) // only process on every other Nth pixel per column
                         {
                             uint currentPixel = sourcePixels[index]; // get the current pixel
+                            uint alpha = (currentPixel & 0xff000000) >> 24; // alpha component
                             uint red = (currentPixel & 0x00ff0000) >> 16; // red color component
                             uint green = (currentPixel & 0x0000ff00) >> 8; // green color component
                             uint blue = currentPixel & 0x000000ff; // blue color component
@@ -65,8 +66,8 @@ namespace NISDKExtendedEffects.ImageEffects
                                 blue = (uint)Math.Max(0, Math.Min(255, (blue + ((255 - blue) * m_BrightnessPercentage))));
                             }
 
-                            uint newPixel = 0xff000000 | (red << 16) | (green << 8) | blue; // reassembling each component back into a pixel
-                            targetPixels[index] = newPixel; // assign the newPixel to the equivalent location in the output image
+                            // Reassemble each component back into a pixel and assign it to the equivalent output image location
+                            targetPixels[index] = (alpha << 24) | (red << 16) | (green << 8) | blue;
                         }
                     }
                 }

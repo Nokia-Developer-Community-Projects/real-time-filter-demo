@@ -86,60 +86,69 @@ namespace NISDKExtendedEffects.ImageEffects
         // REFERENCE: http://msdn.microsoft.com/en-us/library/aa479306.aspx
         private uint QunatizeColor(uint pixel)
         {
-            Color colorResult = m_DefaultColor;
-            bool foundColor = false;
-            if (m_Cache)
-            {
-                foundColor = m_AssignedColorCache.TryGetValue(pixel, out colorResult); // 2 FPS cost
-            }
+            uint alpha = (pixel & 0xff000000) >> 24; // alpha component
 
-            // This section has a 5 FPS cost with 9 colors :-(
-            if (!foundColor)
+            if (!alpha.Equals(0)) // Only process if it is not transparent
             {
-                int leastDistance = m_LeastDistanceDefault;
-                int red = (int)((pixel & 0x00ff0000) >> 16); // red color component
-                int green = (int)((pixel & 0x0000ff00) >> 8); // green color component
-                int blue = (int)(pixel & 0x000000ff); // blue color component
-
-                // Loop through the entire palette, looking for the closest color match
-                foreach (Color paletteColor in m_TargetColors)
+                Color colorResult = m_DefaultColor;
+                bool foundColor = false;
+                if (m_Cache)
                 {
-                    // Compute the distance from our source color to the palette color
-                    int redDistance = paletteColor.R - red;
-                    int greenDistance = paletteColor.G - green;
-                    int blueDistance = paletteColor.B - blue;
+                    foundColor = m_AssignedColorCache.TryGetValue(pixel, out colorResult); // 2 FPS cost
+                }
 
-                    int distance = (redDistance * redDistance) +
-                                   (greenDistance * greenDistance) +
-                                   (blueDistance * blueDistance);
+                // This section has a 5 FPS cost with 9 colors :-(
+                if (!foundColor)
+                {
+                    int leastDistance = m_LeastDistanceDefault;
+                    int red = (int)((pixel & 0x00ff0000) >> 16); // red color component
+                    int green = (int)((pixel & 0x0000ff00) >> 8); // green color component
+                    int blue = (int)(pixel & 0x000000ff); // blue color component
 
-                    // If the color is closer than any other found so far, use it
-                    if (distance < leastDistance)
+                    // Loop through the entire palette, looking for the closest color match
+                    foreach (Color paletteColor in m_TargetColors)
                     {
-                        colorResult = paletteColor;
-                        leastDistance = distance;
+                        // Compute the distance from our source color to the palette color
+                        int redDistance = paletteColor.R - red;
+                        int greenDistance = paletteColor.G - green;
+                        int blueDistance = paletteColor.B - blue;
 
-                        // And if it's an exact match, exit the loop
-                        if (0 == distance)
-                            break;
+                        int distance = (redDistance * redDistance) +
+                                        (greenDistance * greenDistance) +
+                                        (blueDistance * blueDistance);
+
+                        // If the color is closer than any other found so far, use it
+                        if (distance < leastDistance)
+                        {
+                            colorResult = paletteColor;
+                            leastDistance = distance;
+
+                            // And if it's an exact match, exit the loop
+                            if (0 == distance)
+                                break;
+                        }
+                    }
+
+                    // Cache the color assignment
+                    if (m_Cache)
+                    {
+                        m_AssignedColorCache.Add(pixel, colorResult);
                     }
                 }
 
-                // Cache the color assignment
-                if (m_Cache)
-                {
-                    m_AssignedColorCache.Add(pixel, colorResult);
-                }
+                //// If close to white, make it black - experimenting with creating a Magic Pen effect
+                //if (Math.Min(colorResult.R, Math.Min(colorResult.G, colorResult.B)) >= 255)
+                //{
+                //    colorResult = m_DefaultColor;
+                //}
+
+                // Return the color converted to a uint - 1 FPS cost - slightly faster than FromColor()
+                return (uint)((colorResult.A << 24) | (colorResult.R << 16) | (colorResult.G << 8) | (colorResult.B << 0));
             }
-
-            //// If close to white, make it black - experimenting with creating a Magic Pen effect
-            //if (Math.Min(colorResult.R, Math.Min(colorResult.G, colorResult.B)) >= 255)
-            //{
-            //    colorResult = m_DefaultColor;
-            //}
-
-            // Return the color converted to a uint - 1 FPS cost - slightly faster than FromColor()
-            return (uint)((colorResult.A << 24) | (colorResult.R << 16) | (colorResult.G << 8) | (colorResult.B << 0));
+            else
+            {
+                return pixel;
+            }
         }
     }
 }

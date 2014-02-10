@@ -32,28 +32,36 @@ namespace NISDKExtendedEffects.ImageEffects
                 for (int x = 0; x < width; ++x, ++index)
                 {
                     uint currentPixel = sourcePixels[index]; // get the current pixel
-                    uint red = (currentPixel & 0x00ff0000) >> 16; // red color component
-                    uint green = (currentPixel & 0x0000ff00) >> 8; // green color component
-                    uint blue = currentPixel & 0x000000ff; // blue color component
+                    uint alpha = (currentPixel & 0xff000000) >> 24; // alpha component
 
+                    if (!alpha.Equals(0)) // Only process if it is not transparent
+                    {
+                        uint red = (currentPixel & 0x00ff0000) >> 16; // red color component
+                        uint green = (currentPixel & 0x0000ff00) >> 8; // green color component
+                        uint blue = currentPixel & 0x000000ff; // blue color component
 
-                    // RGB to YIQ
-                    uint Y = (uint)Math.Min((0.299 * red + 0.587 * green + 0.114 * blue), 255);
-                    uint I = (uint)Math.Min((0.596 * red - 0.274 * green - 0.322 * blue), 255);
-                    uint Q = (uint)Math.Min((0.212 * red - 0.523 * green + 0.311 * blue), 255);
-                    
-                    // Update for Sepia look
-                    I = m_Intensity;
-                    Q = 0;
-                    
-                    // YIQ to RGB
-                    red = (uint)Math.Min((1.0 * Y + 0.956 * I + 0.621 * Q), 255);
-                    green = (uint)Math.Min((1.0 * Y - 0.272 * I - 0.647 * Q), 255);
-                    blue = (uint)Math.Min((1.0 * Y - 1.105 * I + 1.702 * Q), 255);
+                        // RGB to YIQ
+                        uint Y = (uint)(0.299 * red + 0.587 * green + 0.114 * blue);
+                        uint I = (uint)Math.Max((0.596 * red - 0.274 * green - 0.322 * blue), 0);
+                        //uint Q = (uint)Math.Max((0.212 * red - 0.523 * green + 0.311 * blue), 0); // No need to calculate since we zero out
+                        //uint Q = 0; // No need to even create the variable if we are not using the exact original formula
 
+                        // Update for Sepia look
+                        I = m_Intensity;
 
-                    // Reassembling each component back into a pixel and assigning it to the output location 
-                    targetPixels[index] = 0xff000000 | (red << 16) | (green << 8) | blue;
+                        // YIQ to RGB
+                        // Original formula for converting back from YIQ to RGB
+                        //red = (uint)Math.Min((1.0 * Y + 0.956 * I + 0.621 * Q), 255);
+                        //green = (uint)Math.Min(Math.Max((1.0 * Y - 0.272 * I - 0.647 * Q), 0), 255);
+                        //blue = (uint)Math.Min(Math.Max((1.0 * Y - 1.105 * I + 1.702 * Q), 0), 255);
+                        // No need to waste multiplications with 1.0 or with the Q component we zero out
+                        red = (uint)Math.Min((Y + (0.956 * I)), 255);
+                        green = (uint)Math.Min(Math.Max((Y - (0.272 * I)), 0), 255);
+                        blue = (uint)Math.Min(Math.Max((Y - (1.105 * I)), 0), 255);
+
+                        // Reassembling each component back into a pixel and assigning it to the output location 
+                        targetPixels[index] = (alpha << 24) | (red << 16) | (green << 8) | blue;
+                    }
                 }
             });
         }

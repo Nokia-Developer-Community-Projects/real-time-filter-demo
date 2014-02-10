@@ -35,8 +35,9 @@ namespace NISDKExtendedEffects.ImageEffects
                     // This techinque will work with both a realtime feed and static images.
                     ///*
                     uint pixel = sourcePixels[index]; // get the current pixel
+                    uint alpha = (pixel & 0xff000000) >> 24; // alpha component
 
-                    if (pixel > 0) // Only take the negative of pixels that have color
+                    if (!alpha.Equals(0)) // Only process if it is not transparent
                     {
                         // Flip the bits of the pixel to create the negative effect
                         pixel = ~pixel;
