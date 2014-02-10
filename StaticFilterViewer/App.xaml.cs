@@ -7,6 +7,8 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using StaticFilterViewer.Resources;
+using System.Collections.Generic;
+using Windows.UI;
 
 namespace StaticFilterViewer
 {
@@ -17,6 +19,8 @@ namespace StaticFilterViewer
         /// </summary>
         /// <returns>The root frame of the Phone Application.</returns>
         public static PhoneApplicationFrame RootFrame { get; private set; }
+
+        public static Dictionary<uint, Color> AssignedColorCache;
 
         /// <summary>
         /// Constructor for the Application object.
@@ -34,6 +38,8 @@ namespace StaticFilterViewer
 
             // Language display initialization
             InitializeLanguage();
+
+            AssignedColorCache = new Dictionary<uint, Color>();
 
             // Show graphics profiling information while debugging.
             if (Debugger.IsAttached)
