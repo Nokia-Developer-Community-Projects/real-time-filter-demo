@@ -36,9 +36,8 @@ namespace NISDKExtendedEffects.ImageEffects
                 for (int x = 0; x < width; ++x, ++index)
                 {
                     uint pixel = sourcePixels[index]; // get the current pixel
-                    uint alpha = (pixel & 0xff000000) >> 24; // alpha component
 
-                    if (!alpha.Equals(0)) // Only process if it is not transparent
+                    if (!pixel.Equals(0)) // Only process if it is not transparent and part of the image
                     {
                         uint red = (pixel & 0x00ff0000) >> 16; // red color component
                         uint green = (pixel & 0x0000ff00) >> 8; // green color component
@@ -55,7 +54,7 @@ namespace NISDKExtendedEffects.ImageEffects
                         red = green = blue = grayscaleAverage;
 
                         // Reassembling each component back into a pixel
-                        pixel = (alpha << 24) | (red << 16) | (green << 8) | blue;
+                        pixel = 0xff000000 | (red << 16) | (green << 8) | blue;
 
                         // Flip the bits of the pixel to create the negative effect
                         pixel = ~pixel;

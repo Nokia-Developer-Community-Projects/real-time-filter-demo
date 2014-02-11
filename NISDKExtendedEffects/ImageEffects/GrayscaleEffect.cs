@@ -38,9 +38,8 @@ namespace NISDKExtendedEffects.ImageEffects
                 {
                     // 16-17 FPS with built-in GrayscaleFilter() and 11 FPS with this technique on Lumia 920
                     uint currentPixel = sourcePixels[index]; // get the current pixel
-                    uint alpha = (currentPixel & 0xff000000) >> 24; // alpha component
 
-                    if (!alpha.Equals(0)) // Only process if it is not transparent
+                    if (!currentPixel.Equals(0)) // Only process if it is not transparent and part of the image
                     {
                         uint red = (currentPixel & 0x00ff0000) >> 16; // red color component
                         uint green = (currentPixel & 0x0000ff00) >> 8; // green color component
@@ -77,10 +76,11 @@ namespace NISDKExtendedEffects.ImageEffects
                         }
 
                         // Assign the result to each component
-                        red = green = blue = grayscaleAverage;
+                        //red = green = blue = grayscaleAverage;
 
-                        // Reassembling each component back into a pixel for the target pixel location
-                        targetPixels[index] = (alpha << 24) | (red << 16) | (green << 8) | blue; 
+                        // Reassembling the average for each component back into a pixel for the target pixel location
+                        //targetPixels[index] = 0xff000000 | (red << 16) | (green << 8) | blue;
+                        targetPixels[index] = 0xff000000 | (grayscaleAverage << 16) | (grayscaleAverage << 8) | grayscaleAverage; 
                     }
                 }
             });

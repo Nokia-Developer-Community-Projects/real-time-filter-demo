@@ -32,9 +32,8 @@ namespace NISDKExtendedEffects.ImageEffects
                 for (int x = 0; x < width; ++x, ++index)
                 {
                     uint currentPixel = sourcePixels[index]; // get the current pixel
-                    uint alpha = (currentPixel & 0xff000000) >> 24; // alpha component
 
-                    if (!alpha.Equals(0)) // Only process if it is not transparent
+                    if (!currentPixel.Equals(0)) // Only process if it is not transparent and part of the image
                     {
                         uint red = (currentPixel & 0x00ff0000) >> 16; // red color component
                         uint green = (currentPixel & 0x0000ff00) >> 8; // green color component
@@ -60,7 +59,7 @@ namespace NISDKExtendedEffects.ImageEffects
                         blue = (uint)Math.Min(Math.Max((Y - (1.105 * I)), 0), 255);
 
                         // Reassembling each component back into a pixel and assigning it to the output location 
-                        targetPixels[index] = (alpha << 24) | (red << 16) | (green << 8) | blue;
+                        targetPixels[index] = 0xff000000 | (red << 16) | (green << 8) | blue;
                     }
                 }
             });

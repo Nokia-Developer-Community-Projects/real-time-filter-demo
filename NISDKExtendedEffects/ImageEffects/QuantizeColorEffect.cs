@@ -86,9 +86,7 @@ namespace NISDKExtendedEffects.ImageEffects
         // REFERENCE: http://msdn.microsoft.com/en-us/library/aa479306.aspx
         private uint QunatizeColor(uint pixel)
         {
-            uint alpha = (pixel & 0xff000000) >> 24; // alpha component
-
-            if (!alpha.Equals(0)) // Only process if it is not transparent
+            if (!pixel.Equals(0)) // Only process if it is not transparent and part of the image
             {
                 Color colorResult = m_DefaultColor;
                 bool foundColor = false;

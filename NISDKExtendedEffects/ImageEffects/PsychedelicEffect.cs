@@ -30,9 +30,8 @@ namespace NISDKExtendedEffects.ImageEffects
                 {
                     // NOTE: Just pulling out the color components and reassembling them brings you down to 14-15 FPS
                     uint currentPixel = sourcePixels[index]; // get the current pixel
-                    uint alpha = (currentPixel & 0xff000000) >> 24; // alpha component
 
-                    if (!alpha.Equals(0)) // Only process if it is not transparent
+                    if (!currentPixel.Equals(0)) // Only process if it is not transparent and part of the image
                     {
                         uint red = (currentPixel & 0x00ff0000) >> 16; // red color component
                         uint green = (currentPixel & 0x0000ff00) >> 8; // green color component
@@ -49,7 +48,7 @@ namespace NISDKExtendedEffects.ImageEffects
                         blue = (blue < m_factor ? 255 : blue - m_factor);
 
                         // Reassemble each component back into a pixel and assign it to the equivalent output image location
-                        targetPixels[index] = (alpha << 24) | (red << 16) | (green << 8) | blue;
+                        targetPixels[index] = 0xff000000 | (red << 16) | (green << 8) | blue;
                     }
                 }
             });
