@@ -425,34 +425,6 @@ namespace RealtimeFilterDemo
 
                 case 35:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in SepiaFilter");
-                        filters.Add(new SepiaFilter());
-                    }
-                    break;
-
-                case 36:
-                    {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom SepiaEffect - 0.42 (default)");
-                        _customEffect = new SepiaEffect(_cameraPreviewImageSource, 0.42);
-                    }
-                    break;
-
-                case 37:
-                    {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom SepiaEffect - 0.32");
-                        _customEffect = new SepiaEffect(_cameraPreviewImageSource, 0.32);
-                    }
-                    break;
-
-                case 38:
-                    {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom SepiaEffect - 0.62");
-                        _customEffect = new SepiaEffect(_cameraPreviewImageSource, 0.62);
-                    }
-                    break;
-
-                case 39:
-                    {
                         //// Dismal performance without Cache
                         //EffectName = String.Format(nameFormat, (_effectIndex + 1), "QuantizeColorEffect without Cache - 16 color");
                         //Dictionary<uint, Color> assignedColorCache = null;
@@ -464,7 +436,7 @@ namespace RealtimeFilterDemo
                     }
                     break;
 
-                case 40:
+                case 36:
                     {
                         EffectName = String.Format(nameFormat, (_effectIndex + 1), "QuantizeColorEffect with Cache - Half of Web Safe Colors");
                         _customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref App.AssignedColorCache,
@@ -472,7 +444,7 @@ namespace RealtimeFilterDemo
                     }
                     break;
 
-                case 41:
+                case 37:
                     {
                         EffectName = String.Format(nameFormat, (_effectIndex + 1), "QuantizeColorEffect with Cache - Web Safe Colors");
                         _customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref App.AssignedColorCache,
@@ -480,7 +452,7 @@ namespace RealtimeFilterDemo
                     }
                     break;
 
-                case 42:
+                case 38:
                     {
                         EffectName = String.Format(nameFormat, (_effectIndex + 1), "QuantizeColorEffect with Cache - X11 Colors");
                         _customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref App.AssignedColorCache,
@@ -488,14 +460,14 @@ namespace RealtimeFilterDemo
                     }
                     break;
 
-                case 43:
+                case 39:
                     {
                         EffectName = String.Format(nameFormat, (_effectIndex + 1), "QuantizeColorEffect with Cache - 16 Colors");
                         _customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref App.AssignedColorCache,
                             null, QuantizeColorEffect.ColorPalette.Color16);
                     }
                     break;
-                case 44:
+                case 40:
                     {
                         List<Color> targetColors = new List<Color>();
                         targetColors.Add(Color.FromArgb(255, 0, 0, 0)); // Black
@@ -521,6 +493,34 @@ namespace RealtimeFilterDemo
 
                         EffectName = String.Format(nameFormat, (_effectIndex + 1), "QuantizeColorEffect with Cache - Custom Colors");
                         _customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref App.AssignedColorCache, targetColors);
+                    }
+                    break;
+
+                case 41:
+                    {
+                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in SepiaFilter");
+                        filters.Add(new SepiaFilter());
+                    }
+                    break;
+
+                case 42:
+                    {
+                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom SepiaEffect - 0.42 (default)");
+                        _customEffect = new SepiaEffect(_cameraPreviewImageSource, 0.42);
+                    }
+                    break;
+
+                case 43:
+                    {
+                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom SepiaEffect - 0.32");
+                        _customEffect = new SepiaEffect(_cameraPreviewImageSource, 0.32);
+                    }
+                    break;
+
+                case 44:
+                    {
+                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom SepiaEffect - 0.62");
+                        _customEffect = new SepiaEffect(_cameraPreviewImageSource, 0.62);
                     }
                     break;
             }

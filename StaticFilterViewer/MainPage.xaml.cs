@@ -336,6 +336,8 @@ namespace StaticFilterViewer
                 {
                     m_LocalImages.Add(item.Name);
                 }
+
+                m_LocalImages.Sort();
             }
             catch (Exception ex)
             {

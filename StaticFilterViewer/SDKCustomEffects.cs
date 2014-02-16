@@ -365,34 +365,6 @@ namespace StaticFilterViewer
 
                 case 35:
                     {
-                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in SepiaFilter");
-                        filters.Add(new SepiaFilter());
-                    }
-                    break;
-
-                case 36:
-                    {
-                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom SepiaEffect - 0.42 (default)");
-                        m_CustomEffect = new SepiaEffect(m_StreamImageSource, 0.42);
-                    }
-                    break;
-
-                case 37:
-                    {
-                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom SepiaEffect - 0.32");
-                        m_CustomEffect = new SepiaEffect(m_StreamImageSource, 0.32);
-                    }
-                    break;
-
-                case 38:
-                    {
-                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom SepiaEffect - 0.62");
-                        m_CustomEffect = new SepiaEffect(m_StreamImageSource, 0.62);
-                    }
-                    break;
-
-                case 39:
-                    {
                         //// Dismal performance without Cache
                         //EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "QuantizeColorEffect without Cache - 16 color");
                         //Dictionary<uint, Color> assignedColorCache = null;
@@ -404,7 +376,7 @@ namespace StaticFilterViewer
                     }
                     break;
 
-                case 40:
+                case 36:
                     {
                         EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "QuantizeColorEffect with Cache - Half of Web Safe Colors");
                         m_CustomEffect = new QuantizeColorEffect(m_StreamImageSource, ref App.AssignedColorCache,
@@ -412,7 +384,7 @@ namespace StaticFilterViewer
                     }
                     break;
 
-                case 41:
+                case 37:
                     {
                         EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "QuantizeColorEffect with Cache - Web Safe Colors");
                         m_CustomEffect = new QuantizeColorEffect(m_StreamImageSource, ref App.AssignedColorCache,
@@ -420,7 +392,7 @@ namespace StaticFilterViewer
                     }
                     break;
 
-                case 42:
+                case 38:
                     {
                         EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "QuantizeColorEffect with Cache - X11 Colors");
                         m_CustomEffect = new QuantizeColorEffect(m_StreamImageSource, ref App.AssignedColorCache,
@@ -428,14 +400,14 @@ namespace StaticFilterViewer
                     }
                     break;
 
-                case 43:
+                case 39:
                     {
                         EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "QuantizeColorEffect with Cache - 16 Colors");
                         m_CustomEffect = new QuantizeColorEffect(m_StreamImageSource, ref App.AssignedColorCache,
                             null, QuantizeColorEffect.ColorPalette.Color16);
                     }
                     break;
-                case 44:
+                case 40:
                     {
                         List<Color> targetColors = new List<Color>();
                         targetColors.Add(Color.FromArgb(255, 0, 0, 0)); // Black
@@ -464,6 +436,33 @@ namespace StaticFilterViewer
                     }
                     break;
 
+                case 41:
+                    {
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in SepiaFilter");
+                        filters.Add(new SepiaFilter());
+                    }
+                    break;
+
+                case 42:
+                    {
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom SepiaEffect - 0.42 (default)");
+                        m_CustomEffect = new SepiaEffect(m_StreamImageSource, 0.42);
+                    }
+                    break;
+
+                case 43:
+                    {
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom SepiaEffect - 0.32");
+                        m_CustomEffect = new SepiaEffect(m_StreamImageSource, 0.32);
+                    }
+                    break;
+
+                case 44:
+                    {
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom SepiaEffect - 0.62");
+                        m_CustomEffect = new SepiaEffect(m_StreamImageSource, 0.62);
+                    }
+                    break;
             }
 
             if (filters.Count > 0)
@@ -478,6 +477,5 @@ namespace StaticFilterViewer
         }
 
         private int m_EffectCount = 45;  // Remember to increment by one with each case added above.
-
     }
 }

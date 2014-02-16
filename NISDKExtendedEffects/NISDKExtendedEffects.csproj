@@ -98,7 +98,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Nokia.Graphics.Imaging.Managed">
+    <Reference Include="Nokia.Graphics.Imaging.Managed, Version=1.0.272.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NokiaImagingSDK.1.0.272.0\lib\wp8\Nokia.Graphics.Imaging.Managed.dll</HintPath>
     </Reference>
   </ItemGroup>
