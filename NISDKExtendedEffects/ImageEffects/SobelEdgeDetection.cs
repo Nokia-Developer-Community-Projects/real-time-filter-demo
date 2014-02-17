@@ -29,20 +29,8 @@ namespace NISDKExtendedEffects.ImageEffects
             var width = (int)sourcePixelRegion.Bounds.Width;
             var height = (int)sourcePixelRegion.Bounds.Height;
 
-            var blackColor = new Color();
-            blackColor.A = 255;
-            blackColor.R = 0;
-            blackColor.G = 0;
-            blackColor.B = 0;
-
-            var whiteColor = new Color();
-            whiteColor.A = 255;
-            whiteColor.R = 255;
-            whiteColor.G = 255;
-            whiteColor.B = 255;
-
-            uint black = FromColor(blackColor);
-            uint white = FromColor(whiteColor);
+            uint white = 0xff000000 | (255 << 16) | (255 << 8) | 255;
+            uint black = 0xff000000 | (0 << 16) | (0 << 8) | 0;
 
             int[,] gx = new int[,] { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
             int[,] gy = new int[,] { { 1, 2, 1 }, { 0, 0, 0 }, { -1, -2, -1 } };

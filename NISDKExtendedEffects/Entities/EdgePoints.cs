@@ -5,7 +5,7 @@
 // ============================================================================
 
 using System;
-using Windows.Foundation;
+using System.Windows;
 
 namespace NISDKExtendedEffects.Entities
 {
@@ -37,17 +37,17 @@ namespace NISDKExtendedEffects.Entities
             Bounds = edgePoints.Bounds;
         }
 
+        //public EdgePoints(Rect bounds)
+        //{
+        //    TopLeft = new Point();
+        //    TopRight = new Point();
+        //    BottomLeft = new Point();
+        //    BottomRight = new Point();
+
+        //    Bounds = bounds;
+        //}
+
         public EdgePoints(Rect bounds)
-        {
-            TopLeft = new Point();
-            TopRight = new Point();
-            BottomLeft = new Point();
-            BottomRight = new Point();
-
-            Bounds = bounds;
-        }
-
-        public EdgePoints(System.Windows.Rect bounds)
         {
             TopLeft = new Point();
             TopRight = new Point();

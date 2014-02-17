@@ -1,12 +1,11 @@
-﻿using System;
+﻿using NISDKExtendedEffects.ImageEffects;
+using Nokia.Graphics.Imaging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
-using NISDKExtendedEffects.ImageEffects;
-using Nokia.Graphics.Imaging;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.UI;
 
 namespace StaticFilterViewer
@@ -23,10 +22,9 @@ namespace StaticFilterViewer
         public CustomEffectBase CustomEffect { get { return m_CustomEffect; } private set { m_CustomEffect = value; } }
         public String EffectName { get; private set; }
 
-
         ~SDKCustomEffects()
         {
-            while (!m_Semaphore.WaitOne(100));
+            while (!m_Semaphore.WaitOne(100)) ;
 
             Uninitialize();
 
@@ -89,7 +87,7 @@ namespace StaticFilterViewer
         public void Initialize()
         {
             var filters = new List<IFilter>();
-            var nameFormat = "{0}/" + m_EffectCount + " - {1}"; 
+            var nameFormat = "{0}/" + m_EffectCount + " - {1}";
 
             App.AssignedColorCache = new Dictionary<uint, Color>(); // Reset
 
@@ -265,8 +263,7 @@ namespace StaticFilterViewer
                         //m_CustomEffect = new GrayscaleEffect(m_StreamImageSource, 0.3990, 0.3870, 0.2140);
                         m_CustomEffect = new GrayscaleEffect(m_StreamImageSource, 0.3126, 0.5152, 0.0722); // very close to SDK
                         //m_CustomEffect = new GrayscaleEffect(m_StreamImageSource, 0.2276, 0.7152, 0.0822);
-                        //m_CustomEffect = new GrayscaleEffect(m_StreamImageSource, 0.2526, 0.6652, 0.0822);    
-
+                        //m_CustomEffect = new GrayscaleEffect(m_StreamImageSource, 0.2526, 0.6652, 0.0822);
                     }
                     break;
 
@@ -338,7 +335,6 @@ namespace StaticFilterViewer
                             Filters = new List<IFilter>() { new WarpFilter(WarpEffect.Twister, 0.50) }
                         };
                         m_CustomEffect = new PsychedelicEffect(imageEffect, 50);
-
                     }
                     break;
 
@@ -368,7 +364,7 @@ namespace StaticFilterViewer
                         //// Dismal performance without Cache
                         //EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "QuantizeColorEffect without Cache - 16 color");
                         //Dictionary<uint, Color> assignedColorCache = null;
-                        //m_CustomEffect = new QuantizeColorEffect(m_StreamImageSource, ref assignedColorCache, 
+                        //m_CustomEffect = new QuantizeColorEffect(m_StreamImageSource, ref assignedColorCache,
                         //    null, QuantizeColorEffect.ColorPalette.Color16);
 
                         EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Inbuilt CartoonFilter");
@@ -407,6 +403,7 @@ namespace StaticFilterViewer
                             null, QuantizeColorEffect.ColorPalette.Color16);
                     }
                     break;
+
                 case 40:
                     {
                         List<Color> targetColors = new List<Color>();
@@ -463,6 +460,63 @@ namespace StaticFilterViewer
                         m_CustomEffect = new SepiaEffect(m_StreamImageSource, 0.62);
                     }
                     break;
+
+                case 45:
+                    {
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom CannyEdgeDetection");
+                        m_CustomEffect = new CannyEdgeDetection(m_StreamImageSource);
+                    }
+                    break;
+
+                case 46:
+                    {
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom OtsuThresholdEffect");
+                        m_CustomEffect = new OtsuThresholdEffect(m_StreamImageSource);
+                    }
+                    break;
+
+                case 47:
+                    {
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom SobelEdgeDetection");
+                        m_CustomEffect = new SobelEdgeDetection(m_StreamImageSource);
+                    }
+                    break;
+
+                case 48:
+                    {
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom BlobCounter");
+
+                        var sobelDetection = new SobelEdgeDetection(m_StreamImageSource);
+
+                        m_CustomEffect = new BlobCounter(sobelDetection)
+                        {
+                            HasPreview = true,
+                            ObjectsOrder = NISDKExtendedEffects.Entities.ObjectsOrder.Area
+                        };
+                    }
+                    break;
+
+                case 49:
+                    {
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom QuadTransformation");
+
+                        NISDKExtendedEffects.Entities.EdgePoints points = new NISDKExtendedEffects.Entities.EdgePoints()
+                        {
+                            TopLeft = new System.Windows.Point(120, 50),
+                            TopRight = new System.Windows.Point(550, 0),
+                            BottomLeft = new System.Windows.Point(100, 440),
+                            BottomRight = new System.Windows.Point(450, 300)
+                        };
+
+                        var estimatedSize = points.EstimatedRectangleSize();
+
+                        m_CustomEffect = new QuadTransformation(m_StreamImageSource, estimatedSize, NISDKExtendedEffects.Entities.QuadDirection.QuadToRect, points);
+
+                        //QuadTransformation doesn't change to image size, it fills black rest of the image.
+                        //Because of that, after it is processed ReframingFilter must be applied.
+                        //filters.Add(new ReframingFilter(new Windows.Foundation.Rect(0, 0, estimatedSize.Width, estimatedSize.Height), 0));
+                    }
+                    break;
             }
 
             if (filters.Count > 0)
@@ -476,6 +530,6 @@ namespace StaticFilterViewer
             }
         }
 
-        private int m_EffectCount = 45;  // Remember to increment by one with each case added above.
+        private int m_EffectCount = 50;  // Remember to increment by one with each case added above.
     }
 }

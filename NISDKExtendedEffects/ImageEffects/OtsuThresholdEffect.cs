@@ -9,11 +9,11 @@ using Windows.UI;
 
 namespace NISDKExtendedEffects.ImageEffects
 {
-    public class OtsuThresholdFilter : CustomEffectBase
+    public class OtsuThresholdEffect : CustomEffectBase
     {
         public byte Threshold { get; set; }
 
-        public OtsuThresholdFilter(IImageProvider source)
+        public OtsuThresholdEffect(IImageProvider source)
             : base(source, true)
         {
         }
@@ -49,18 +49,23 @@ namespace NISDKExtendedEffects.ImageEffects
 
             Threshold = (byte)findMax(vet, 256);
 
+            uint white = 0xff000000 | (255 << 16) | (255 << 8) | 255;
+            uint black = 0xff000000 | (0 << 16) | (0 << 8) | 0;
+
             sourcePixelRegion.ForEachRow((index, width, pos) =>
             {
                 for (int x = 0; x < width; ++x, ++index)
                 {
-                    Color c = ToColor(sourcePixelRegion.ImagePixels[index]);
+                    uint currentPixel = sourcePixelRegion.ImagePixels[index];
 
-                    if (c.R < Threshold || c.G < Threshold || c.B < Threshold)
-                        c.B = c.G = c.R = 0;
+                    uint red = (currentPixel & 0x00ff0000) >> 16; // red color component
+                    uint green = (currentPixel & 0x0000ff00) >> 8; // green color component
+                    uint blue = currentPixel & 0x000000ff; // blue color component
+
+                    if (red < Threshold || green < Threshold || blue < Threshold)
+                        sourcePixelRegion.ImagePixels[index] = black;
                     else
-                        c.B = c.G = c.R = 255;
-
-                    sourcePixelRegion.ImagePixels[index] = FromColor(c);
+                        sourcePixelRegion.ImagePixels[index] = white;
                 }
             });
         }

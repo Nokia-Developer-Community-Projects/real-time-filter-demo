@@ -75,7 +75,6 @@
     <Compile Include="ImageEffects\BrightnessEffect.cs" />
     <Compile Include="ImageEffects\CannyEdgeDetection.cs" />
     <Compile Include="ImageEffects\ColorAdjustEffect.cs" />
-    <Compile Include="ImageEffects\ColorPaletteEffect.cs" />
     <Compile Include="ImageEffects\GrayscaleEffect.cs" />
     <Compile Include="ImageEffects\GrayscaleNegativeEffect.cs" />
     <Compile Include="ImageEffects\HistogramCalculation.cs" />
