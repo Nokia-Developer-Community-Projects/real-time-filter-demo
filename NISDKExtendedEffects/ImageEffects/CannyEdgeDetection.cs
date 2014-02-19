@@ -2,10 +2,12 @@
 // DATE        AUTHOR                   DESCRIPTION
 // ----------  -----------------------  ---------------------------------------
 // 2014.02.13  Engin.Kırmacı            Initial creation
+// 2014.02.17  Engin.Kırmacı            Reducing Math calc for performance
 // ============================================================================
 
 using Nokia.Graphics.Imaging;
 using System;
+using System.Diagnostics;
 using Windows.UI;
 
 namespace NISDKExtendedEffects.ImageEffects
@@ -20,10 +22,11 @@ namespace NISDKExtendedEffects.ImageEffects
         public float[,] Gradient;
         public float[,] NonMax;
         public int[,] PostHysteresis;
-        public float[,] GNH;
-        public float[,] GNL;
         public int[,] EdgeMap;
         public int[,] VisitedMap;
+
+        //public float[,] GNH;
+        //public float[,] GNL;
 
         private int[,] GaussianKernel;
         private int KernelWeight;
@@ -56,21 +59,21 @@ namespace NISDKExtendedEffects.ImageEffects
             {
                 for (j = 0; j < Width; j++)
                 {
-                    var color = ToColor(sourcePixelRegion.ImagePixels[j * Width + i]);
-                    GreyImage[j, i] = (int)((color.R + color.G + color.B) / 3.0);
+                    var currentPixel = sourcePixelRegion.ImagePixels[i * Width + j];
+                    GreyImage[j, i] = (int)((((currentPixel & 0x00ff0000) >> 16) + ((currentPixel & 0x0000ff00) >> 8) + (currentPixel & 0x000000ff)) / 3.0);
                 }
             }
 
             Gradient = new float[Width, Height];
-            NonMax = new float[Width, Height];
+            //NonMax = new float[Width, Height];
             PostHysteresis = new int[Width, Height];
 
             DerivativeX = new float[Width, Height];
             DerivativeY = new float[Width, Height];
 
             //Gaussian Filter Input Image
-
             FilteredImage = GaussianFilter(GreyImage);
+
             //Sobel Masks
             int[,] Dx = {{1,0,-1},
                          {1,0,-1},
@@ -81,6 +84,7 @@ namespace NISDKExtendedEffects.ImageEffects
                          {-1,-1,-1}};
 
             DerivativeX = Differentiate(FilteredImage, Dx);
+
             DerivativeY = Differentiate(FilteredImage, Dy);
 
             //Compute the gradient magnitude based on derivatives in x and y:
@@ -92,18 +96,17 @@ namespace NISDKExtendedEffects.ImageEffects
                 }
             }
             // Perform Non maximum suppression:
-            // NonMax = Gradient;
+            NonMax = Gradient;
 
-            for (i = 0; i <= (Width - 1); i++)
-            {
-                for (j = 0; j <= (Height - 1); j++)
-                {
-                    NonMax[i, j] = Gradient[i, j];
-                }
-            }
+            //for (i = 0; i <= (Width - 1); i++)
+            //{
+            //    for (j = 0; j <= (Height - 1); j++)
+            //    {
+            //        NonMax[i, j] = Gradient[i, j];
+            //    }
+            //}
 
             int Limit = KernelSize / 2;
-            int r, c;
             float Tangent;
 
             for (i = Limit; i <= (Width - Limit) - 1; i++)
@@ -146,11 +149,11 @@ namespace NISDKExtendedEffects.ImageEffects
             }
 
             //PostHysteresis = NonMax;
-            for (r = Limit; r <= (Width - Limit) - 1; r++)
+            for (i = Limit; i <= (Width - Limit) - 1; i++)
             {
-                for (c = Limit; c <= (Height - Limit) - 1; c++)
+                for (j = Limit; j <= (Height - Limit) - 1; j++)
                 {
-                    PostHysteresis[r, c] = (int)NonMax[r, c];
+                    PostHysteresis[i, j] = (int)NonMax[i, j];
                 }
             }
 
@@ -158,56 +161,45 @@ namespace NISDKExtendedEffects.ImageEffects
             float min, max;
             min = 100;
             max = 0;
-            for (r = Limit; r <= (Width - Limit) - 1; r++)
-                for (c = Limit; c <= (Height - Limit) - 1; c++)
+            for (i = Limit; i <= (Width - Limit) - 1; i++)
+                for (j = Limit; j <= (Height - Limit) - 1; j++)
                 {
-                    if (PostHysteresis[r, c] > max)
+                    if (PostHysteresis[i, j] > max)
                     {
-                        max = PostHysteresis[r, c];
+                        max = PostHysteresis[i, j];
                     }
 
-                    if ((PostHysteresis[r, c] < min) && (PostHysteresis[r, c] > 0))
+                    if ((PostHysteresis[i, j] < min) && (PostHysteresis[i, j] > 0))
                     {
-                        min = PostHysteresis[r, c];
+                        min = PostHysteresis[i, j];
                     }
                 }
+            //GNH = new float[Width, Height];
+            //GNL = new float[Width, Height];
 
-            GNH = new float[Width, Height];
-            GNL = new float[Width, Height]; ;
             EdgePoints = new int[Width, Height];
 
-            for (r = Limit; r <= (Width - Limit) - 1; r++)
+            for (i = Limit; i <= (Width - Limit) - 1; i++)
             {
-                for (c = Limit; c <= (Height - Limit) - 1; c++)
+                for (j = Limit; j <= (Height - Limit) - 1; j++)
                 {
-                    if (PostHysteresis[r, c] >= MaxHysteresisThresh)
+                    if (PostHysteresis[i, j] >= MaxHysteresisThresh)
                     {
-                        EdgePoints[r, c] = 1;
-                        GNH[r, c] = 255;
+                        EdgePoints[i, j] = 1;
+                        //GNH[i, j] = 255;
                     }
-                    if ((PostHysteresis[r, c] < MaxHysteresisThresh) && (PostHysteresis[r, c] >= MinHysteresisThresh))
+                    if ((PostHysteresis[i, j] < MaxHysteresisThresh) && (PostHysteresis[i, j] >= MinHysteresisThresh))
                     {
-                        EdgePoints[r, c] = 2;
-                        GNL[r, c] = 255;
+                        EdgePoints[i, j] = 2;
+                        //GNL[i, j] = 255;
                     }
                 }
             }
 
             HysterisisThresholding(EdgePoints);
 
-            Color whiteColor = new Color();
-            whiteColor.A = 255;
-            whiteColor.R = 255;
-            whiteColor.G = 255;
-            whiteColor.B = 255;
-            uint white = FromColor(whiteColor);
-
-            var blackColor = new Color();
-            blackColor.A = 255;
-            blackColor.R = 0;
-            blackColor.G = 0;
-            blackColor.B = 0;
-            uint black = FromColor(blackColor);
+            uint white = 0xff000000 | (255 << 16) | (255 << 8) | 255;
+            uint black = 0xff000000 | (0 << 16) | (0 << 8) | 0;
 
             for (i = 0; i <= (Width - 1); i++)
                 for (j = 0; j <= (Height - 1); j++)

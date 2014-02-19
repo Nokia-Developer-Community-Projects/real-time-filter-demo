@@ -1,8 +1,8 @@
 ﻿/*
  * Copyright © 2013 Nokia Corporation. All rights reserved.
- * Nokia and Nokia Connecting People are registered trademarks of Nokia Corporation. 
+ * Nokia and Nokia Connecting People are registered trademarks of Nokia Corporation.
  * Other product and company names mentioned herein may be trademarks
- * or trade names of their respective owners. 
+ * or trade names of their respective owners.
  * See LICENSE.TXT for license information.
  */
 
@@ -13,11 +13,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-//using System.Windows.Media;
-using Windows.UI;
 using Windows.Foundation;
 using Windows.Phone.Media.Capture;
 using Windows.Storage.Streams;
+
+//using System.Windows.Media;
+using Windows.UI;
 
 namespace RealtimeFilterDemo
 {
@@ -38,7 +39,7 @@ namespace RealtimeFilterDemo
             {
                 if (_photoCaptureDevice != value)
                 {
-                    while (!_semaphore.WaitOne(100));
+                    while (!_semaphore.WaitOne(100)) ;
 
                     _photoCaptureDevice = value;
 
@@ -51,7 +52,7 @@ namespace RealtimeFilterDemo
 
         ~NokiaImagingSDKEffects()
         {
-            while (!_semaphore.WaitOne(100));
+            while (!_semaphore.WaitOne(100)) ;
 
             Uninitialize();
 
@@ -109,7 +110,7 @@ namespace RealtimeFilterDemo
             if (_semaphore.WaitOne(500))
             {
                 Uninitialize();
-                
+
                 _effectIndex--;
 
                 if (_effectIndex < 0)
@@ -291,7 +292,7 @@ namespace RealtimeFilterDemo
                 case 19:
                     {
                         EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in MirrorFilter and RotateFilter");
-                        filters.Add(new RotationFilter(270)); 
+                        filters.Add(new RotationFilter(270));
                         filters.Add(new MirrorFilter());
                         filters.Add(new RotationFilter(90));
                     }
@@ -325,8 +326,7 @@ namespace RealtimeFilterDemo
                         //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.3990, 0.3870, 0.2140);
                         _customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.3126, 0.5152, 0.0722); // very close to SDK
                         //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.2276, 0.7152, 0.0822);
-                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.2526, 0.6652, 0.0822);    
-
+                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.2526, 0.6652, 0.0822);
                     }
                     break;
 
@@ -398,7 +398,6 @@ namespace RealtimeFilterDemo
                             Filters = new List<IFilter>() { new WarpFilter(WarpEffect.Twister, 0.50) }
                         };
                         _customEffect = new PsychedelicEffect(imageEffect, 50);
-
                     }
                     break;
 
@@ -428,7 +427,7 @@ namespace RealtimeFilterDemo
                         //// Dismal performance without Cache
                         //EffectName = String.Format(nameFormat, (_effectIndex + 1), "QuantizeColorEffect without Cache - 16 color");
                         //Dictionary<uint, Color> assignedColorCache = null;
-                        //_customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref assignedColorCache, 
+                        //_customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref assignedColorCache,
                         //    null, QuantizeColorEffect.ColorPalette.Color16);
 
                         EffectName = String.Format(nameFormat, (_effectIndex + 1), "Inbuilt CartoonFilter");
@@ -467,6 +466,7 @@ namespace RealtimeFilterDemo
                             null, QuantizeColorEffect.ColorPalette.Color16);
                     }
                     break;
+
                 case 40:
                     {
                         List<Color> targetColors = new List<Color>();
@@ -523,6 +523,67 @@ namespace RealtimeFilterDemo
                         _customEffect = new SepiaEffect(_cameraPreviewImageSource, 0.62);
                     }
                     break;
+
+                case 45:
+                    {
+                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom CannyEdgeDetection");
+                        _customEffect = new CannyEdgeDetection(_cameraPreviewImageSource);
+                    }
+                    break;
+
+                case 46:
+                    {
+                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom OtsuThresholdEffect");
+                        _customEffect = new OtsuThresholdEffect(_cameraPreviewImageSource);
+                    }
+                    break;
+
+                case 47:
+                    {
+                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom SobelEdgeDetection");
+                        _customEffect = new SobelEdgeDetection(_cameraPreviewImageSource);
+                    }
+                    break;
+
+                case 48:
+                    {
+                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom BlobCounter");
+
+                        //CannyEdgeDetection gives better performance but sobel is much faster
+                        var sobelDetection = new SobelEdgeDetection(_cameraPreviewImageSource);
+
+                        _customEffect = new BlobCounter(sobelDetection)
+                        {
+                            //Draws detected objects as rectangle, for more information http://www.aforgenet.com/articles/shape_checker/
+                            HasPreview = true,
+                            PreviewCount = 10,
+                            ObjectsOrder = NISDKExtendedEffects.Entities.ObjectsOrder.Area
+                        };
+                    }
+
+                    break;
+
+                case 49:
+                    {
+                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom QuadTransformation");
+
+                        NISDKExtendedEffects.Entities.EdgePoints points = new NISDKExtendedEffects.Entities.EdgePoints()
+                        {
+                            TopLeft = new System.Windows.Point(120, 50),
+                            TopRight = new System.Windows.Point(550, 0),
+                            BottomLeft = new System.Windows.Point(100, 440),
+                            BottomRight = new System.Windows.Point(450, 300)
+                        };
+
+                        var estimatedSize = points.EstimatedRectangleSize();
+
+                        _customEffect = new QuadTransformation(_cameraPreviewImageSource, estimatedSize, NISDKExtendedEffects.Entities.QuadDirection.QuadToRect, points);
+
+                        //QuadTransformation doesn't change to image size, it fills black rest of the image.
+                        //Because of that, after it is processed ReframingFilter must be applied.
+                        //filters.Add(new ReframingFilter(new Windows.Foundation.Rect(0, 0, estimatedSize.Width, estimatedSize.Height), 0));
+                    }
+                    break;
             }
 
             if (filters.Count > 0)
@@ -534,6 +595,6 @@ namespace RealtimeFilterDemo
             }
         }
 
-        private int _effectCount = 45;  // Remember to increment by one with each case added above.
+        private int _effectCount = 50;  // Remember to increment by one with each case added above.
     }
 }

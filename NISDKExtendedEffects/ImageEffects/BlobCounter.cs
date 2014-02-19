@@ -41,6 +41,9 @@ namespace NISDKExtendedEffects.ImageEffects
         private const byte backgroundThresholdG = 0;
         private const byte backgroundThresholdB = 0;
 
+        private bool hasPreview = false;
+        private int previewCount = 10;
+
         /// <summary>
         /// Objects count.
         /// </summary>
@@ -228,6 +231,18 @@ namespace NISDKExtendedEffects.ImageEffects
             set { filter = value; }
         }
 
+        public bool HasPreview
+        {
+            get { return hasPreview; }
+            set { hasPreview = value; }
+        }
+
+        public int PreviewCount
+        {
+            get { return previewCount; }
+            set { previewCount = value; }
+        }
+
         public BlobCounter(IImageProvider source)
             : base(source, true)
         {
@@ -337,6 +352,150 @@ namespace NISDKExtendedEffects.ImageEffects
             if (objectsOrder != ObjectsOrder.None)
             {
                 blobs.Sort(new BlobsSorter(objectsOrder));
+            }
+
+            if (HasPreview)
+            {
+                var rects = GetObjectsRectangles();
+                Random rand = new Random();
+
+                int count = 0;
+                foreach (var rect in rects)
+                {
+                    DrawRectangle(sourcePixelRegion, rect, new Color() { A = 255, R = (byte)rand.Next(0, 255), G = (byte)rand.Next(0, 255), B = (byte)rand.Next(0, 255) });
+
+                    count++;
+
+                    if (count == PreviewCount)
+                        break;
+                }
+            }
+        }
+
+        private void DrawRectangle(PixelRegion sourcePixelRegion, Rect rectangle, Color color)
+        {
+            uint Color = FromColor(color);
+
+            var topLeft = new Point(rectangle.X, rectangle.Y);
+            var topRight = new Point(rectangle.X + rectangle.Width, rectangle.Y);
+            var bottomLeft = new Point(rectangle.X, rectangle.Y + rectangle.Height);
+            var bottomRight = new Point(rectangle.X + rectangle.Width, rectangle.Y + rectangle.Height);
+            // draw line on the image
+            DrawLineBresenham(sourcePixelRegion,
+                topLeft,
+                topRight,
+                Color);
+
+            DrawLineBresenham(sourcePixelRegion,
+                topRight,
+                bottomRight,
+                Color);
+
+            DrawLineBresenham(sourcePixelRegion,
+                bottomRight,
+                bottomLeft,
+                Color);
+
+            DrawLineBresenham(sourcePixelRegion,
+                bottomLeft,
+               topLeft,
+                Color);
+        }
+
+        public void DrawLineBresenham(PixelRegion sourcePixelRegion, Point p1, Point p2, uint color)
+        {
+            int w = (int)sourcePixelRegion.ImageSize.Width;
+            int h = (int)sourcePixelRegion.ImageSize.Height;
+            var pixels = sourcePixelRegion.ImagePixels;
+
+            int x1 = (int)p1.X;
+            int y1 = (int)p1.Y;
+
+            int x2 = (int)p2.X;
+            int y2 = (int)p2.Y;
+
+            // Distance start and end point
+            int dx = x2 - x1;
+            int dy = y2 - y1;
+
+            // Determine sign for direction x
+            int incx = 0;
+            if (dx < 0)
+            {
+                dx = -dx;
+                incx = -1;
+            }
+            else if (dx > 0)
+            {
+                incx = 1;
+            }
+
+            // Determine sign for direction y
+            int incy = 0;
+            if (dy < 0)
+            {
+                dy = -dy;
+                incy = -1;
+            }
+            else if (dy > 0)
+            {
+                incy = 1;
+            }
+
+            // Which gradient is larger
+            int pdx, pdy, odx, ody, es, el;
+            if (dx > dy)
+            {
+                pdx = incx;
+                pdy = 0;
+                odx = incx;
+                ody = incy;
+                es = dy;
+                el = dx;
+            }
+            else
+            {
+                pdx = 0;
+                pdy = incy;
+                odx = incx;
+                ody = incy;
+                es = dx;
+                el = dy;
+            }
+
+            // Init start
+            int x = x1;
+            int y = y1;
+            int error = el >> 1;
+            if (y < h && y >= 0 && x < w && x >= 0)
+            {
+                pixels[y * w + x] = color;
+            }
+
+            // Walk the line!
+            for (int i = 0; i < el; i++)
+            {
+                // Update error term
+                error -= es;
+
+                // Decide which coord to use
+                if (error < 0)
+                {
+                    error += el;
+                    x += odx;
+                    y += ody;
+                }
+                else
+                {
+                    x += pdx;
+                    y += pdy;
+                }
+
+                // Set pixel
+                if (y < h && y >= 0 && x < w && x >= 0)
+                {
+                    pixels[y * w + x] = color;
+                }
             }
         }
 

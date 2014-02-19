@@ -68,14 +68,16 @@
     <Compile Include="Entities\Blob.cs" />
     <Compile Include="Entities\EdgePoints.cs" />
     <Compile Include="Entities\IBlobsFilter.cs" />
+    <Compile Include="Entities\IShapeOptimizer.cs" />
     <Compile Include="Entities\ObjectsOrder.cs" />
     <Compile Include="Entities\QuadDirection.cs" />
     <Compile Include="Entities\ShapeType.cs" />
+    <Compile Include="Extensions\LineExtension.cs" />
+    <Compile Include="Extensions\PointExtension.cs" />
     <Compile Include="ImageEffects\BlobCounter.cs" />
     <Compile Include="ImageEffects\BrightnessEffect.cs" />
     <Compile Include="ImageEffects\CannyEdgeDetection.cs" />
     <Compile Include="ImageEffects\ColorAdjustEffect.cs" />
-    <Compile Include="ImageEffects\ColorPaletteEffect.cs" />
     <Compile Include="ImageEffects\GrayscaleEffect.cs" />
     <Compile Include="ImageEffects\GrayscaleNegativeEffect.cs" />
     <Compile Include="ImageEffects\HistogramCalculation.cs" />
@@ -91,6 +93,11 @@
     <Compile Include="ImageEffects\SepiaEffect.cs" />
     <Compile Include="ImageEffects\SkipPixelEffect.cs" />
     <Compile Include="ImageEffects\SobelEdgeDetection.cs" />
+    <Compile Include="Maths\ConvexHull.cs" />
+    <Compile Include="Maths\FlatAnglesOptimizer.cs" />
+    <Compile Include="Maths\GeometryTools.cs" />
+    <Compile Include="Maths\PointsCloud.cs" />
+    <Compile Include="Maths\SimpleShapeChecker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

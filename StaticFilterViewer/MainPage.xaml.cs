@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Navigation;
-using Microsoft.Phone.Controls;
+﻿using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
-using StaticFilterViewer.Resources;
-using System.Windows.Media.Imaging;
+using Microsoft.Phone.Tasks;
+using Microsoft.Xna.Framework.Media;
 using NISDKExtendedEffects.ImageEffects;
 using Nokia.Graphics.Imaging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using Windows.Storage;
 using Windows.Storage.Streams;
-using Microsoft.Xna.Framework.Media;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Microsoft.Phone.Tasks;
-
 
 namespace StaticFilterViewer
 {
@@ -28,13 +24,15 @@ namespace StaticFilterViewer
         private bool m_Busy = false;
         private int m_CurrentLocalImageIndex = 0;
         private List<string> m_LocalImages = new List<string>();
-        ApplicationBarIconButton m_PreviousButton = new ApplicationBarIconButton();
-        ApplicationBarIconButton m_NextButton = new ApplicationBarIconButton();
-        ApplicationBarIconButton m_NextImageButton = new ApplicationBarIconButton();
-        ApplicationBarIconButton m_PreviousImageButton = new ApplicationBarIconButton();
+        private ApplicationBarIconButton m_PreviousButton = new ApplicationBarIconButton();
+        private ApplicationBarIconButton m_NextButton = new ApplicationBarIconButton();
+        private ApplicationBarIconButton m_NextImageButton = new ApplicationBarIconButton();
+        private ApplicationBarIconButton m_PreviousImageButton = new ApplicationBarIconButton();
+
         //ApplicationBarIconButton m_SaveButton = new ApplicationBarIconButton();
-        ApplicationBarMenuItem m_SaveButton = new ApplicationBarMenuItem();
-        ApplicationBarMenuItem m_ChooseImageButton = new ApplicationBarMenuItem();
+        private ApplicationBarMenuItem m_SaveButton = new ApplicationBarMenuItem();
+
+        private ApplicationBarMenuItem m_ChooseImageButton = new ApplicationBarMenuItem();
 
         public bool Busy
         {
@@ -72,7 +70,7 @@ namespace StaticFilterViewer
 
             BuildApplicationBar();
         }
-        
+
         private void BuildApplicationBar()
         {
             // Set the page's ApplicationBar to a new instance of ApplicationBar.
@@ -112,7 +110,6 @@ namespace StaticFilterViewer
             m_ChooseImageButton.Text = "Choose Image";
             m_ChooseImageButton.Click += ChooseImageButton_Click;
             ApplicationBar.MenuItems.Add(m_ChooseImageButton);
-
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -143,7 +140,7 @@ namespace StaticFilterViewer
             m_CurrentLocalImageIndex = m_LocalImages.Count() - 1; // Start with the last image in the list
             m_LocalPictureName = m_LocalImages[m_CurrentLocalImageIndex];
             LoadLocalImage();
-            
+
             // Start off at the last effect
             m_SDKCustomEffects.PreviousEffect();
             StatusTextBlock.Text = m_SDKCustomEffects.EffectName;
@@ -214,7 +211,7 @@ namespace StaticFilterViewer
             Busy = false;
         }
 
-        void ChooseImageButton_Click(object sender, EventArgs e)
+        private void ChooseImageButton_Click(object sender, EventArgs e)
         {
             Busy = true;
             PhotoChooserTask photoChooser = new PhotoChooserTask();
@@ -257,7 +254,6 @@ namespace StaticFilterViewer
 
             try
             {
-
                 if (m_SDKCustomEffects == null)
                     return;
 
@@ -270,7 +266,7 @@ namespace StaticFilterViewer
                 // NOTE: Must include this using statement for jpegOutput to have the AsStream() method
                 // using System.Runtime.InteropServices.WindowsRuntime;
                 MediaLibrary library = new MediaLibrary();
-                string fileName = string.Format("CustonEffectImage_{0:G}", DateTime.Now);
+                string fileName = string.Format("CustomEffectImage_{0:G}", DateTime.Now);
                 var picture = library.SavePicture(fileName, jpegOutput.AsStream());
 
                 MessageBox.Show("Image saved!");
@@ -378,7 +374,7 @@ namespace StaticFilterViewer
                     //using (var customEffect = new GrayscaleEffect(imageStream))
                     //using (var customEffect = new GrayscaleEffect(imageStream, 0.2126, 0.7152, 0.0722)) // Algorithm 1 - Default
                     //using (var customEffect = new GrayscaleEffect(imageStream, 0.299, 0.587, 0.114)) // Algorithm 2
-                    //using (var customEffect = new GrayscaleEffect(imageStream, 0.3333, 0.3333, 0.3333)) 
+                    //using (var customEffect = new GrayscaleEffect(imageStream, 0.3333, 0.3333, 0.3333))
                     {
                         // Rendering the resulting image to a WriteableBitmap
                         using (var renderer = new WriteableBitmapRenderer(customEffect, writeableBitmap))
