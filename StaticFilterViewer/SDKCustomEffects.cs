@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI;
+using NISDKExtendedEffects.Entities;
 
 namespace StaticFilterViewer
 {
@@ -89,7 +90,7 @@ namespace StaticFilterViewer
             var filters = new List<IFilter>();
             var nameFormat = "{0}/" + m_EffectCount + " - {1}";
 
-            App.AssignedColorCache = new Dictionary<uint, Color>(); // Reset
+            App.AssignedColorCache = new Dictionary<uint, uint>(); // Reset
 
             switch (m_EffectIndex)
             {
@@ -406,27 +407,27 @@ namespace StaticFilterViewer
 
                 case 40:
                     {
-                        List<Color> targetColors = new List<Color>();
-                        targetColors.Add(Color.FromArgb(255, 0, 0, 0)); // Black
-                        targetColors.Add(Color.FromArgb(255, 0, 0, 128)); // Low Blue (Navy)
-                        targetColors.Add(Color.FromArgb(255, 0, 128, 0)); // Low Green (Green)
-                        targetColors.Add(Color.FromArgb(255, 0, 128, 128)); // Low Cyan (Teal)
-                        targetColors.Add(Color.FromArgb(255, 128, 0, 0)); // Low Red (Maroon)
-                        targetColors.Add(Color.FromArgb(255, 175, 238, 238)); // PaleTurquoise
-                        targetColors.Add(Color.FromArgb(255, 255, 69, 0)); // OrangeRed
-                        targetColors.Add(Color.FromArgb(255, 255, 99, 71)); // Tomato
-                        targetColors.Add(Color.FromArgb(255, 255, 0, 255)); // High Magenta (Fuchsia)
-                        targetColors.Add(Color.FromArgb(255, 255, 165, 0)); // Orange
-                        targetColors.Add(Color.FromArgb(255, 255, 255, 0)); // Yellow
-                        targetColors.Add(Color.FromArgb(255, 47, 79, 79)); // DarkSlateGray
-                        targetColors.Add(Color.FromArgb(255, 255, 255, 255)); // White
-                        targetColors.Add(Color.FromArgb(255, 250, 250, 210)); // LightGoldenrodYellow
-                        targetColors.Add(Color.FromArgb(255, 176, 196, 222)); // LightSteelBlue
-                        targetColors.Add(Color.FromArgb(255, 255, 255, 240)); // Ivory
-                        targetColors.Add(Color.FromArgb(255, 255, 245, 238)); // Seashell
-                        targetColors.Add(Color.FromArgb(255, 245, 245, 220)); // Beige
-                        targetColors.Add(Color.FromArgb(255, 70, 130, 180)); // SteelBlue
-                        targetColors.Add(Color.FromArgb(255, 250, 235, 215)); // AntiqueWhite
+                        List<uint> targetColors = new List<uint>();
+                        targetColors.Add(0xff000000 | (0 << 16) | (0 << 8) | 0); // Black
+                        targetColors.Add(0xff000000 | (0 << 16) | (0 << 8) | 128); // Low Blue (Navy)
+                        targetColors.Add(0xff000000 | (0 << 16) | (128 << 8) | 0); // Low Green (Green)
+                        targetColors.Add(0xff000000 | (0 << 16) | (128 << 128) | 0); // Low Cyan (Teal)
+                        targetColors.Add(0xff000000 | (128 << 16) | (0 << 8) | 0); // Low Red (Maroon)
+                        targetColors.Add(0xff000000 | (175 << 16) | (238 << 8) | 238); // PaleTurquoise
+                        targetColors.Add(0xff000000 | (255 << 16) | (69 << 8) | 0); // OrangeRed
+                        targetColors.Add(0xff000000 | (255 << 16) | (99 << 8) | 71); // Tomato
+                        targetColors.Add(0xff000000 | (255 << 16) | (0 << 8) | 255); // High Magenta (Fuchsia)
+                        targetColors.Add(0xff000000 | (255 << 16) | (165 << 8) | 0); // Orange
+                        targetColors.Add(0xff000000 | (255 << 16) | (255 << 8) | 0); // Yellow
+                        targetColors.Add(0xff000000 | (47 << 16) | (79 << 8) | 79); // DarkSlateGray
+                        targetColors.Add(0xff000000 | (255 << 16) | (255 << 8) | 255); // White
+                        targetColors.Add(0xff000000 | (250 << 16) | (250 << 8) | 210); // LightGoldenrodYellow
+                        targetColors.Add(0xff000000 | (176 << 16) | (196 << 8) | 222); // LightSteelBlue
+                        targetColors.Add(0xff000000 | (255 << 16) | (255 << 8) | 240); // Ivory
+                        targetColors.Add(0xff000000 | (255 << 16) | (245 << 8) | 238); // Seashell
+                        targetColors.Add(0xff000000 | (245 << 16) | (245 << 8) | 220); // Beige
+                        targetColors.Add(0xff000000 | (70 << 16) | (130 << 8) | 180); // SteelBlue
+                        targetColors.Add(0xff000000 | (250 << 16) | (235 << 8) | 215); // AntiqueWhite
 
                         EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "QuantizeColorEffect with Cache - Custom Colors");
                         m_CustomEffect = new QuantizeColorEffect(m_StreamImageSource, ref App.AssignedColorCache, targetColors);

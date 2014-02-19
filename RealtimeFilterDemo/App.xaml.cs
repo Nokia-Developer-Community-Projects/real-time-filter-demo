@@ -9,6 +9,7 @@ using RealtimeFilterDemo.Resources;
 using System.Collections.Generic;
 //using System.Windows.Media;
 using Windows.UI;
+using NISDKExtendedEffects.Entities;
 
 namespace RealtimeFilterDemo
 {
@@ -20,7 +21,7 @@ namespace RealtimeFilterDemo
         /// <returns>The root frame of the Phone Application.</returns>
         public static PhoneApplicationFrame RootFrame { get; private set; }
 
-        public static Dictionary<uint, Color> AssignedColorCache;
+        public static Dictionary<uint, uint> AssignedColorCache;
 
         /// <summary>
         /// Constructor for the Application object.
@@ -39,7 +40,7 @@ namespace RealtimeFilterDemo
             // Language display initialization
             InitializeLanguage();
 
-            AssignedColorCache = new Dictionary<uint, Color>();
+            AssignedColorCache = new Dictionary<uint, uint>();
 
             // Show graphics profiling information while debugging.
             if (Debugger.IsAttached)
