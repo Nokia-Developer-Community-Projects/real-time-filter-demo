@@ -203,7 +203,7 @@ namespace StaticFilterViewer
 
             // Get the previous image, and go to the end if we are already at the beginning
             m_CurrentLocalImageIndex--;
-            if (m_CurrentLocalImageIndex <= 0)
+            if (m_CurrentLocalImageIndex < 0)
             {
                 m_CurrentLocalImageIndex = m_LocalImages.Count() - 1;
             }
