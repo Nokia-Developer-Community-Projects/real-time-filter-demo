@@ -2,12 +2,7 @@
 using Nokia.Graphics.Imaging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Windows.UI;
-using NISDKExtendedEffects.Entities;
 
 namespace StaticFilterViewer
 {
@@ -487,7 +482,7 @@ namespace StaticFilterViewer
                     {
                         EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom BlobCounter");
 
-                        var sobelDetection = new SobelEdgeDetection(m_StreamImageSource);
+                        var sobelDetection = new OtsuThresholdEffect(m_StreamImageSource);
 
                         m_CustomEffect = new BlobCounter(sobelDetection)
                         {
@@ -509,9 +504,33 @@ namespace StaticFilterViewer
                             BottomRight = new System.Windows.Point(450, 300)
                         };
 
+                        //NISDKExtendedEffects.Entities.EdgePoints points = new NISDKExtendedEffects.Entities.EdgePoints()
+                        //{
+                        //    TopLeft = new System.Windows.Point(20, 20),
+                        //    TopRight = new System.Windows.Point(150, 0),
+                        //    BottomLeft = new System.Windows.Point(50, 100),
+                        //    BottomRight = new System.Windows.Point(125, 125)
+                        //};
+
+                        //NISDKExtendedEffects.Entities.EdgePoints points = new NISDKExtendedEffects.Entities.EdgePoints()
+                        //{
+                        //    TopLeft = new System.Windows.Point(50, 25),
+                        //    TopRight = new System.Windows.Point(625, 35),
+                        //    BottomLeft = new System.Windows.Point(25, 475),
+                        //    BottomRight = new System.Windows.Point(640, 480)
+                        //};
+
                         var estimatedSize = points.EstimatedRectangleSize();
 
-                        m_CustomEffect = new QuadTransformation(m_StreamImageSource, estimatedSize, NISDKExtendedEffects.Entities.QuadDirection.QuadToRect, points);
+                        var customEffect = new QuadTransformation(m_StreamImageSource, estimatedSize, NISDKExtendedEffects.Entities.QuadDirection.QuadToRect, points);
+
+                        var reframingFilter = new ReframingFilter(new Windows.Foundation.Rect(0, 0, estimatedSize.Width, estimatedSize.Height), 0);
+
+                        m_FilterEffect = new FilterEffect(customEffect)
+                        {
+                            Filters = new IFilter[] { reframingFilter }
+                        };
+                        m_CustomEffect = new NoEffect(m_FilterEffect);
 
                         //QuadTransformation doesn't change to image size, it fills black rest of the image.
                         //Because of that, after it is processed ReframingFilter must be applied.

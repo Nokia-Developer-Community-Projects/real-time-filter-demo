@@ -2,23 +2,15 @@
 // DATE        AUTHOR                   DESCRIPTION
 // ----------  -----------------------  ---------------------------------------
 // 2014.02.13  Engin.Kırmacı            Initial creation
+// 2014.02.28  Engin.Kırmacı            Remove unused property
 // ============================================================================
 
 using Nokia.Graphics.Imaging;
-using Windows.UI;
 
 namespace NISDKExtendedEffects.ImageEffects
 {
     public class SobelEdgeDetection : CustomEffectBase
     {
-        private bool scaleIntensity = true;
-
-        public bool ScaleIntensity
-        {
-            get { return scaleIntensity; }
-            set { scaleIntensity = value; }
-        }
-
         public SobelEdgeDetection(IImageProvider source)
             : base(source)
         {

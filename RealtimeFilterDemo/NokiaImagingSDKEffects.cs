@@ -8,7 +8,6 @@
 
 using NISDKExtendedEffects.ImageEffects;
 using Nokia.Graphics.Imaging;
-using RealtimeFilterDemo.Resources;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -16,10 +15,8 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Phone.Media.Capture;
 using Windows.Storage.Streams;
-using NISDKExtendedEffects.Entities;
 
 //using System.Windows.Media;
-using Windows.UI;
 
 namespace RealtimeFilterDemo
 {
@@ -551,7 +548,7 @@ namespace RealtimeFilterDemo
                         EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom BlobCounter");
 
                         //CannyEdgeDetection gives better performance but sobel is much faster
-                        var sobelDetection = new SobelEdgeDetection(_cameraPreviewImageSource);
+                        var sobelDetection = new OtsuThresholdEffect(_cameraPreviewImageSource);
 
                         _customEffect = new BlobCounter(sobelDetection)
                         {
@@ -576,13 +573,32 @@ namespace RealtimeFilterDemo
                             BottomRight = new System.Windows.Point(450, 300)
                         };
 
+                        //NISDKExtendedEffects.Entities.EdgePoints points = new NISDKExtendedEffects.Entities.EdgePoints()
+                        //{
+                        //    TopLeft = new System.Windows.Point(20, 20),
+                        //    TopRight = new System.Windows.Point(150, 0),
+                        //    BottomLeft = new System.Windows.Point(50, 100),
+                        //    BottomRight = new System.Windows.Point(125, 125)
+                        //};
+
+                        //NISDKExtendedEffects.Entities.EdgePoints points = new NISDKExtendedEffects.Entities.EdgePoints()
+                        //{
+                        //    TopLeft = new System.Windows.Point(50, 25),
+                        //    TopRight = new System.Windows.Point(625, 35),
+                        //    BottomLeft = new System.Windows.Point(25, 475),
+                        //    BottomRight = new System.Windows.Point(640, 480)
+                        //};
+
                         var estimatedSize = points.EstimatedRectangleSize();
 
-                        _customEffect = new QuadTransformation(_cameraPreviewImageSource, estimatedSize, NISDKExtendedEffects.Entities.QuadDirection.QuadToRect, points);
+                        var customEffect = new QuadTransformation(_cameraPreviewImageSource, estimatedSize, NISDKExtendedEffects.Entities.QuadDirection.QuadToRect, points);
 
-                        //QuadTransformation doesn't change to image size, it fills black rest of the image.
-                        //Because of that, after it is processed ReframingFilter must be applied.
-                        //filters.Add(new ReframingFilter(new Windows.Foundation.Rect(0, 0, estimatedSize.Width, estimatedSize.Height), 0));
+                        var reframingFilter = new ReframingFilter(new Windows.Foundation.Rect(0, 0, estimatedSize.Width, estimatedSize.Height), 0);
+
+                        _filterEffect = new FilterEffect(customEffect)
+                        {
+                            Filters = new IFilter[] { reframingFilter }
+                        };
                     }
                     break;
             }
