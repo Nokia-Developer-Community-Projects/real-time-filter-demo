@@ -74,6 +74,7 @@
     <Compile Include="Entities\ShapeType.cs" />
     <Compile Include="Extensions\LineExtension.cs" />
     <Compile Include="Extensions\PointExtension.cs" />
+    <Compile Include="Extensions\UintExtension.cs" />
     <Compile Include="ImageEffects\BlobCounter.cs" />
     <Compile Include="ImageEffects\BrightnessEffect.cs" />
     <Compile Include="ImageEffects\CannyEdgeDetection.cs" />
