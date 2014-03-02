@@ -139,10 +139,10 @@ namespace StaticFilterViewer
             await LoadLocalImageNames();
             m_CurrentLocalImageIndex = m_LocalImages.Count() - 1; // Start with the last image in the list
             m_LocalPictureName = m_LocalImages[m_CurrentLocalImageIndex];
-            LoadLocalImage();
+            await LoadLocalImage();
 
             // Start off at the last effect
-            m_SDKCustomEffects.PreviousEffect();
+            await m_SDKCustomEffects.PreviousEffect();
             StatusTextBlock.Text = m_SDKCustomEffects.EffectName;
             await ProcessImage();
             Busy = false;
@@ -162,7 +162,7 @@ namespace StaticFilterViewer
         private async void NextButton_Click(object sender, EventArgs e)
         {
             Busy = true;
-            m_SDKCustomEffects.NextEffect();
+            await m_SDKCustomEffects.NextEffect();
             StatusTextBlock.Text = m_SDKCustomEffects.EffectName;
             await ProcessImage();
             Busy = false;
@@ -171,7 +171,7 @@ namespace StaticFilterViewer
         private async void PreviousButton_Click(object sender, EventArgs e)
         {
             Busy = true;
-            m_SDKCustomEffects.PreviousEffect();
+            await m_SDKCustomEffects.PreviousEffect();
             StatusTextBlock.Text = m_SDKCustomEffects.EffectName;
             await ProcessImage();
             Busy = false;
@@ -189,7 +189,7 @@ namespace StaticFilterViewer
             }
             m_LocalPictureName = m_LocalImages[m_CurrentLocalImageIndex];
 
-            LoadLocalImage();
+            await LoadLocalImage();
             await ProcessImage();
             Busy = false;
         }
@@ -206,7 +206,7 @@ namespace StaticFilterViewer
             }
             m_LocalPictureName = m_LocalImages[m_CurrentLocalImageIndex];
 
-            LoadLocalImage();
+            await LoadLocalImage();
             await ProcessImage();
             Busy = false;
         }
@@ -236,7 +236,7 @@ namespace StaticFilterViewer
 
                 e.ChosenPhoto.Position = 0;
                 StreamImageSource imageStream = new StreamImageSource(e.ChosenPhoto);
-                m_SDKCustomEffects.StreamImage = imageStream;
+                await m_SDKCustomEffects.SetStreamImage(imageStream);
                 await ProcessImage();
             }
             catch (Exception ex)
@@ -300,14 +300,14 @@ namespace StaticFilterViewer
             }
         }
 
-        private void LoadLocalImage()
+        private async Task LoadLocalImage()
         {
             try
             {
                 // Example: Accessing an image stream from a sample picture loaded with the project in a folder called "Pictures"
                 var resource = App.GetResourceStream(new Uri(string.Concat("Pictures/", m_LocalPictureName), UriKind.Relative));
                 StreamImageSource imageStream = new StreamImageSource(resource.Stream);
-                m_SDKCustomEffects.StreamImage = imageStream;
+                await m_SDKCustomEffects.SetStreamImage(imageStream);
             }
             catch (Exception ex)
             {

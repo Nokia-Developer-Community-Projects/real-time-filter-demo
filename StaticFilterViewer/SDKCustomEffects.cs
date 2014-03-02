@@ -3,6 +3,8 @@ using Nokia.Graphics.Imaging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
+using Windows.Foundation;
 
 namespace StaticFilterViewer
 {
@@ -13,8 +15,8 @@ namespace StaticFilterViewer
         private FilterEffect m_FilterEffect = null;
         private Semaphore m_Semaphore = new Semaphore(1, 1);
         private int m_EffectIndex = 0;
+        private Size m_FrameSize;
 
-        public StreamImageSource StreamImage { get { return m_StreamImageSource; } set { m_StreamImageSource = value; Initialize(); } }
         public CustomEffectBase CustomEffect { get { return m_CustomEffect; } private set { m_CustomEffect = value; } }
         public String EffectName { get; private set; }
 
@@ -27,7 +29,17 @@ namespace StaticFilterViewer
             m_Semaphore.Release();
         }
 
-        public void NextEffect()
+        public async Task SetStreamImage(StreamImageSource streamImage)
+        {
+            m_StreamImageSource = streamImage;
+            
+            ImageProviderInfo imageInfo = await m_StreamImageSource.GetInfoAsync();
+            m_FrameSize = imageInfo.ImageSize;
+            
+            await Initialize();
+        }
+
+        public async Task NextEffect()
         {
             if (m_Semaphore.WaitOne(500))
             {
@@ -40,13 +52,13 @@ namespace StaticFilterViewer
                     m_EffectIndex = 0;
                 }
 
-                Initialize();
+                await Initialize();
 
                 m_Semaphore.Release();
             }
         }
 
-        public void PreviousEffect()
+        public async Task PreviousEffect()
         {
             if (m_Semaphore.WaitOne(500))
             {
@@ -59,7 +71,7 @@ namespace StaticFilterViewer
                     m_EffectIndex = m_EffectCount - 1;
                 }
 
-                Initialize();
+                await Initialize();
 
                 m_Semaphore.Release();
             }
@@ -80,7 +92,7 @@ namespace StaticFilterViewer
             }
         }
 
-        public void Initialize()
+        public async Task Initialize()
         {
             var filters = new List<IFilter>();
             var nameFormat = "{0}/" + m_EffectCount + " - {1}";

@@ -28,6 +28,7 @@ namespace RealtimeFilterDemo
         private CustomEffectBase _customEffect = null;
         private int _effectIndex = 0;
         private Semaphore _semaphore = new Semaphore(1, 1);
+        private Size _frameSize;
 
         public String EffectName { get; private set; }
 
@@ -61,6 +62,8 @@ namespace RealtimeFilterDemo
         {
             if (_semaphore.WaitOne(500))
             {
+                _frameSize = frameSize;
+
                 var scanlineByteSize = (uint)frameSize.Width * 4; // 4 bytes per pixel in BGRA888 mode
                 var bitmap = new Bitmap(frameSize, ColorMode.Bgra8888, scanlineByteSize, frameBuffer);
 
