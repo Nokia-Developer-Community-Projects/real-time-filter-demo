@@ -31,15 +31,22 @@ namespace StaticFilterViewer
 
         public async Task SetStreamImage(StreamImageSource streamImage)
         {
-            m_StreamImageSource = streamImage;
-            
-            ImageProviderInfo imageInfo = await m_StreamImageSource.GetInfoAsync();
-            m_FrameSize = imageInfo.ImageSize;
-            
-            await Initialize();
+            try
+            {
+                m_StreamImageSource = streamImage;
+
+                ImageProviderInfo imageInfo = await m_StreamImageSource.GetInfoAsync();
+                m_FrameSize = imageInfo.ImageSize;
+
+                Initialize();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(string.Concat("Error in SetStreamImage() >>> ", ex));
+            }
         }
 
-        public async Task NextEffect()
+        public void NextEffect()
         {
             if (m_Semaphore.WaitOne(500))
             {
@@ -52,13 +59,13 @@ namespace StaticFilterViewer
                     m_EffectIndex = 0;
                 }
 
-                await Initialize();
+                Initialize();
 
                 m_Semaphore.Release();
             }
         }
 
-        public async Task PreviousEffect()
+        public void PreviousEffect()
         {
             if (m_Semaphore.WaitOne(500))
             {
@@ -71,7 +78,7 @@ namespace StaticFilterViewer
                     m_EffectIndex = m_EffectCount - 1;
                 }
 
-                await Initialize();
+                Initialize();
 
                 m_Semaphore.Release();
             }
@@ -92,7 +99,7 @@ namespace StaticFilterViewer
             }
         }
 
-        public async Task Initialize()
+        public void Initialize()
         {
             var filters = new List<IFilter>();
             var nameFormat = "{0}/" + m_EffectCount + " - {1}";

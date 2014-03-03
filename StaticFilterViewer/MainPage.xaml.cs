@@ -142,7 +142,7 @@ namespace StaticFilterViewer
             await LoadLocalImage();
 
             // Start off at the last effect
-            await m_SDKCustomEffects.PreviousEffect();
+            m_SDKCustomEffects.PreviousEffect();
             StatusTextBlock.Text = m_SDKCustomEffects.EffectName;
             await ProcessImage();
             Busy = false;
@@ -162,7 +162,7 @@ namespace StaticFilterViewer
         private async void NextButton_Click(object sender, EventArgs e)
         {
             Busy = true;
-            await m_SDKCustomEffects.NextEffect();
+            m_SDKCustomEffects.NextEffect();
             StatusTextBlock.Text = m_SDKCustomEffects.EffectName;
             await ProcessImage();
             Busy = false;
@@ -171,7 +171,7 @@ namespace StaticFilterViewer
         private async void PreviousButton_Click(object sender, EventArgs e)
         {
             Busy = true;
-            await m_SDKCustomEffects.PreviousEffect();
+            m_SDKCustomEffects.PreviousEffect();
             StatusTextBlock.Text = m_SDKCustomEffects.EffectName;
             await ProcessImage();
             Busy = false;

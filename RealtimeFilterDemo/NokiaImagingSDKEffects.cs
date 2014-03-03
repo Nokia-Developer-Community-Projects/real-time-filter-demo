@@ -22,13 +22,13 @@ namespace RealtimeFilterDemo
 {
     public class NokiaImagingSDKEffects : ICameraEffect
     {
-        private PhotoCaptureDevice _photoCaptureDevice = null;
-        private CameraPreviewImageSource _cameraPreviewImageSource = null;
-        private FilterEffect _filterEffect = null;
-        private CustomEffectBase _customEffect = null;
-        private int _effectIndex = 0;
-        private Semaphore _semaphore = new Semaphore(1, 1);
-        private Size _frameSize;
+        private PhotoCaptureDevice m_PhotoCaptureDevice = null;
+        private CameraPreviewImageSource m_StreamImageSource = null;
+        private FilterEffect m_FilterEffect = null;
+        private CustomEffectBase m_CustomEffect = null;
+        private int m_EffectIndex = 0;
+        private Semaphore m_Semaphore = new Semaphore(1, 1);
+        private Size m_FrameSize;
 
         public String EffectName { get; private set; }
 
@@ -36,263 +36,263 @@ namespace RealtimeFilterDemo
         {
             set
             {
-                if (_photoCaptureDevice != value)
+                if (m_PhotoCaptureDevice != value)
                 {
-                    while (!_semaphore.WaitOne(100)) ;
+                    while (!m_Semaphore.WaitOne(100)) ;
 
-                    _photoCaptureDevice = value;
+                    m_PhotoCaptureDevice = value;
 
                     Initialize();
 
-                    _semaphore.Release();
+                    m_Semaphore.Release();
                 }
             }
         }
 
         ~NokiaImagingSDKEffects()
         {
-            while (!_semaphore.WaitOne(100)) ;
+            while (!m_Semaphore.WaitOne(100)) ;
 
             Uninitialize();
 
-            _semaphore.Release();
+            m_Semaphore.Release();
         }
 
         public async Task GetNewFrameAndApplyEffect(IBuffer frameBuffer, Size frameSize)
         {
-            if (_semaphore.WaitOne(500))
+            if (m_Semaphore.WaitOne(500))
             {
-                _frameSize = frameSize;
+                m_FrameSize = frameSize;
 
                 var scanlineByteSize = (uint)frameSize.Width * 4; // 4 bytes per pixel in BGRA888 mode
                 var bitmap = new Bitmap(frameSize, ColorMode.Bgra8888, scanlineByteSize, frameBuffer);
 
-                if (_filterEffect != null)
+                if (m_FilterEffect != null)
                 {
-                    var renderer = new BitmapRenderer(_filterEffect, bitmap);
+                    var renderer = new BitmapRenderer(m_FilterEffect, bitmap);
                     await renderer.RenderAsync();
                 }
-                else if (_customEffect != null)
+                else if (m_CustomEffect != null)
                 {
-                    var renderer = new BitmapRenderer(_customEffect, bitmap);
+                    var renderer = new BitmapRenderer(m_CustomEffect, bitmap);
                     await renderer.RenderAsync();
                 }
                 else
                 {
-                    var renderer = new BitmapRenderer(_cameraPreviewImageSource, bitmap);
+                    var renderer = new BitmapRenderer(m_StreamImageSource, bitmap);
                     await renderer.RenderAsync();
                 }
 
-                _semaphore.Release();
+                m_Semaphore.Release();
             }
         }
 
         public void NextEffect()
         {
-            if (_semaphore.WaitOne(500))
+            if (m_Semaphore.WaitOne(500))
             {
                 Uninitialize();
 
-                _effectIndex++;
+                m_EffectIndex++;
 
-                if (_effectIndex >= _effectCount)
+                if (m_EffectIndex >= m_EffectCount)
                 {
-                    _effectIndex = 0;
+                    m_EffectIndex = 0;
                 }
 
                 Initialize();
 
-                _semaphore.Release();
+                m_Semaphore.Release();
             }
         }
 
         public void PreviousEffect()
         {
-            if (_semaphore.WaitOne(500))
+            if (m_Semaphore.WaitOne(500))
             {
                 Uninitialize();
 
-                _effectIndex--;
+                m_EffectIndex--;
 
-                if (_effectIndex < 0)
+                if (m_EffectIndex < 0)
                 {
-                    _effectIndex = _effectCount - 1;
+                    m_EffectIndex = m_EffectCount - 1;
                 }
 
                 Initialize();
 
-                _semaphore.Release();
+                m_Semaphore.Release();
             }
         }
 
         private void Uninitialize()
         {
-            if (_cameraPreviewImageSource != null)
+            if (m_StreamImageSource != null)
             {
-                _cameraPreviewImageSource.Dispose();
-                _cameraPreviewImageSource = null;
+                m_StreamImageSource.Dispose();
+                m_StreamImageSource = null;
             }
 
-            if (_filterEffect != null)
+            if (m_FilterEffect != null)
             {
-                _filterEffect.Dispose();
-                _filterEffect = null;
+                m_FilterEffect.Dispose();
+                m_FilterEffect = null;
             }
 
-            if (_customEffect != null)
+            if (m_CustomEffect != null)
             {
-                _customEffect.Dispose();
-                _customEffect = null;
+                m_CustomEffect.Dispose();
+                m_CustomEffect = null;
             }
         }
 
         private void Initialize()
         {
             var filters = new List<IFilter>();
-            var nameFormat = "{0}/" + _effectCount + " - {1}";
+            var nameFormat = "{0}/" + m_EffectCount + " - {1}";
 
             App.AssignedColorCache = new Dictionary<uint, uint>(); // Reset
-            _cameraPreviewImageSource = new CameraPreviewImageSource(_photoCaptureDevice);
+            m_StreamImageSource = new CameraPreviewImageSource(m_PhotoCaptureDevice);
 
-            switch (_effectIndex)
+            switch (m_EffectIndex)
             {
                 case 0:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "NoEffect");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "NoEffect");
                         // Runs at 18 FPS with NoEffect and 18-19 FPS with nothing at all, so NoEffect() costs about 0.5 FPS
-                        _customEffect = new NoEffect(_cameraPreviewImageSource);
+                        m_CustomEffect = new NoEffect(m_StreamImageSource);
                     }
                     break;
 
                 case 1:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in BrightnessFilter >>> +0.50");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in BrightnessFilter >>> +0.50");
                         filters.Add(new BrightnessFilter(0.50));
                     }
                     break;
 
                 case 2:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom BrightnessEffect >>> +0.50");
-                        _customEffect = new BrightnessEffect(_cameraPreviewImageSource, 0.50);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom BrightnessEffect >>> +0.50");
+                        m_CustomEffect = new BrightnessEffect(m_StreamImageSource, 0.50);
                     }
                     break;
 
                 case 3:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in BrightnessFilter >>> -0.50");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in BrightnessFilter >>> -0.50");
                         filters.Add(new BrightnessFilter(-0.50));
                     }
                     break;
 
                 case 4:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom BrightnessEffect >>> -0.50");
-                        _customEffect = new BrightnessEffect(_cameraPreviewImageSource, -0.50);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom BrightnessEffect >>> -0.50");
+                        m_CustomEffect = new BrightnessEffect(m_StreamImageSource, -0.50);
                     }
                     break;
 
                 case 5:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in ColorAdjustFilter >>> Red at -1.0");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in ColorAdjustFilter >>> Red at -1.0");
                         filters.Add(new ColorAdjustFilter(-1.0, 0, 0));
                     }
                     break;
 
                 case 6:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom ColorAdjustEffect >>> Red at -1.0");
-                        _customEffect = new ColorAdjustEffect(_cameraPreviewImageSource, -1.0, 0, 0);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom ColorAdjustEffect >>> Red at -1.0");
+                        m_CustomEffect = new ColorAdjustEffect(m_StreamImageSource, -1.0, 0, 0);
                     }
                     break;
 
                 case 7:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in ColorAdjustFilter >>> Red at +1.0");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in ColorAdjustFilter >>> Red at +1.0");
                         filters.Add(new ColorAdjustFilter(1.0, 0, 0));
                     }
                     break;
 
                 case 8:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom ColorAdjustEffect >>> Red at +1.0");
-                        _customEffect = new ColorAdjustEffect(_cameraPreviewImageSource, 1.0, 0, 0);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom ColorAdjustEffect >>> Red at +1.0");
+                        m_CustomEffect = new ColorAdjustEffect(m_StreamImageSource, 1.0, 0, 0);
                     }
                     break;
 
                 case 9:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in ColorAdjustFilter >>> Green at -1.0");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in ColorAdjustFilter >>> Green at -1.0");
                         filters.Add(new ColorAdjustFilter(0, -1.0, 0));
                     }
                     break;
 
                 case 10:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom ColorAdjustEffect >>> Green at -1.0");
-                        _customEffect = new ColorAdjustEffect(_cameraPreviewImageSource, 0, -1.0, 0);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom ColorAdjustEffect >>> Green at -1.0");
+                        m_CustomEffect = new ColorAdjustEffect(m_StreamImageSource, 0, -1.0, 0);
                     }
                     break;
 
                 case 11:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in ColorAdjustFilter >>> Green at +1.0");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in ColorAdjustFilter >>> Green at +1.0");
                         filters.Add(new ColorAdjustFilter(0, 1.0, 0));
                     }
                     break;
 
                 case 12:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom ColorAdjustEffect >>> Green at +1.0");
-                        _customEffect = new ColorAdjustEffect(_cameraPreviewImageSource, 0, 1.0, 0);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom ColorAdjustEffect >>> Green at +1.0");
+                        m_CustomEffect = new ColorAdjustEffect(m_StreamImageSource, 0, 1.0, 0);
                     }
                     break;
 
                 case 13:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in ColorAdjustFilter >>> Blue at -1.0");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in ColorAdjustFilter >>> Blue at -1.0");
                         filters.Add(new ColorAdjustFilter(0, 0, -1.0));
                     }
                     break;
 
                 case 14:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom ColorAdjustEffect >>> Blue at -1.0");
-                        _customEffect = new ColorAdjustEffect(_cameraPreviewImageSource, 0, 0, -1.0);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom ColorAdjustEffect >>> Blue at -1.0");
+                        m_CustomEffect = new ColorAdjustEffect(m_StreamImageSource, 0, 0, -1.0);
                     }
                     break;
 
                 case 15:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in ColorAdjustFilter >>> Blue at +1.0");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in ColorAdjustFilter >>> Blue at +1.0");
                         filters.Add(new ColorAdjustFilter(0, 0, 1.0));
                     }
                     break;
 
                 case 16:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom ColorAdjustEffect >>> Blue at +1.0");
-                        _customEffect = new ColorAdjustEffect(_cameraPreviewImageSource, 0, 0, 1.0);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom ColorAdjustEffect >>> Blue at +1.0");
+                        m_CustomEffect = new ColorAdjustEffect(m_StreamImageSource, 0, 0, 1.0);
                     }
                     break;
 
                 case 17:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in MirrorFilter");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in MirrorFilter");
                         filters.Add(new MirrorFilter());
                     }
                     break;
 
                 case 18:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom MirrorEffect >>> Horizontal");
-                        _customEffect = new MirrorEffect(_cameraPreviewImageSource, MirrorEffect.MirrorType.Horizontal);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom MirrorEffect >>> Horizontal");
+                        m_CustomEffect = new MirrorEffect(m_StreamImageSource, MirrorEffect.MirrorType.Horizontal);
                     }
                     break;
 
                 case 19:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in MirrorFilter and RotateFilter");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in MirrorFilter and RotateFilter");
                         filters.Add(new RotationFilter(270));
                         filters.Add(new MirrorFilter());
                         filters.Add(new RotationFilter(90));
@@ -301,169 +301,169 @@ namespace RealtimeFilterDemo
 
                 case 20:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom MirrorEffect >>> Vertical");
-                        _customEffect = new MirrorEffect(_cameraPreviewImageSource, MirrorEffect.MirrorType.Vertical);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom MirrorEffect >>> Vertical");
+                        m_CustomEffect = new MirrorEffect(m_StreamImageSource, MirrorEffect.MirrorType.Vertical);
                     }
                     break;
 
                 case 21:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in GrayscaleFilter");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in GrayscaleFilter");
                         filters.Add(new GrayscaleFilter());
                     }
                     break;
 
                 case 22:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom GrayscaleEffect");
-                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource);
-                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.2126, 0.7152, 0.0722); // Defined Algo 1 - Default
-                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.212671, 0.71516, 0.072169); // CIE Y Algo
-                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.500, 0.419, 0.081); // R-Y Algo
-                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.299, 0.587, 0.114); // Defined Algo 2
-                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.241, 0.691, 0.068, true); // Defined Algo 3
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom GrayscaleEffect");
+                        //m_CustomEffect = new GrayscaleEffect(m_StreamImageSource);
+                        //m_CustomEffect = new GrayscaleEffect(m_StreamImageSource, 0.2126, 0.7152, 0.0722); // Defined Algo 1 - Default
+                        //m_CustomEffect = new GrayscaleEffect(m_StreamImageSource, 0.212671, 0.71516, 0.072169); // CIE Y Algo
+                        //m_CustomEffect = new GrayscaleEffect(m_StreamImageSource, 0.500, 0.419, 0.081); // R-Y Algo
+                        //m_CustomEffect = new GrayscaleEffect(m_StreamImageSource, 0.299, 0.587, 0.114); // Defined Algo 2
+                        //m_CustomEffect = new GrayscaleEffect(m_StreamImageSource, 0.241, 0.691, 0.068, true); // Defined Algo 3
                         //Experiments:
-                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.3333, 0.3333, 0.3333);
-                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.3990, 0.3870, 0.2140);
-                        _customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.3126, 0.5152, 0.0722); // very close to SDK
-                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.2276, 0.7152, 0.0822);
-                        //_customEffect = new GrayscaleEffect(_cameraPreviewImageSource, 0.2526, 0.6652, 0.0822);
+                        //m_CustomEffect = new GrayscaleEffect(m_StreamImageSource, 0.3333, 0.3333, 0.3333);
+                        //m_CustomEffect = new GrayscaleEffect(m_StreamImageSource, 0.3990, 0.3870, 0.2140);
+                        m_CustomEffect = new GrayscaleEffect(m_StreamImageSource, 0.3126, 0.5152, 0.0722); // very close to SDK
+                        //m_CustomEffect = new GrayscaleEffect(m_StreamImageSource, 0.2276, 0.7152, 0.0822);
+                        //m_CustomEffect = new GrayscaleEffect(m_StreamImageSource, 0.2526, 0.6652, 0.0822);
                     }
                     break;
 
                 case 23:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in GrayscaleNegativeFilter");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in GrayscaleNegativeFilter");
                         filters.Add(new GrayscaleNegativeFilter());
                     }
                     break;
 
                 case 24:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom GrayscaleNegativeEffect");
-                        _customEffect = new GrayscaleNegativeEffect(_cameraPreviewImageSource);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom GrayscaleNegativeEffect");
+                        m_CustomEffect = new GrayscaleNegativeEffect(m_StreamImageSource);
                     }
                     break;
 
                 case 25:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in NegativeFilter");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in NegativeFilter");
                         filters.Add(new NegativeFilter());
                     }
                     break;
 
                 case 26:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom NegativeEffect");
-                        _customEffect = new NegativeEffect(_cameraPreviewImageSource);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom NegativeEffect");
+                        m_CustomEffect = new NegativeEffect(m_StreamImageSource);
                     }
                     break;
 
                 case 27:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "PixelationEffect - Scale: 5");
-                        _customEffect = new PixelationEffect(_cameraPreviewImageSource, 5);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "PixelationEffect - Scale: 5");
+                        m_CustomEffect = new PixelationEffect(m_StreamImageSource, 5);
                     }
                     break;
 
                 case 28:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "PixelationEffect - Scale: 15");
-                        _customEffect = new PixelationEffect(_cameraPreviewImageSource, 15);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "PixelationEffect - Scale: 15");
+                        m_CustomEffect = new PixelationEffect(m_StreamImageSource, 15);
                     }
                     break;
 
                 case 29:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "PixelationEffect - Scale: 35");
-                        _customEffect = new PixelationEffect(_cameraPreviewImageSource, 35);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "PixelationEffect - Scale: 35");
+                        m_CustomEffect = new PixelationEffect(m_StreamImageSource, 35);
                     }
                     break;
 
                 case 30:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "PsychedelicEffect - Factor: 25 with WarpEffect.Twister - 0.50");
-                        IImageProvider imageEffect = new FilterEffect(_cameraPreviewImageSource)
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "PsychedelicEffect - Factor: 25 with WarpEffect.Twister - 0.50");
+                        IImageProvider imageEffect = new FilterEffect(m_StreamImageSource)
                         {
                             Filters = new List<IFilter>() { new WarpFilter(WarpEffect.Twister, 0.50) }
                         };
-                        _customEffect = new PsychedelicEffect(imageEffect, 25);
+                        m_CustomEffect = new PsychedelicEffect(imageEffect, 25);
                     }
                     break;
 
                 case 31:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "PsychedelicEffect - Factor: 50 with WarpEffect.Twister - 0.50");
-                        IImageProvider imageEffect = new FilterEffect(_cameraPreviewImageSource)
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "PsychedelicEffect - Factor: 50 with WarpEffect.Twister - 0.50");
+                        IImageProvider imageEffect = new FilterEffect(m_StreamImageSource)
                         {
                             Filters = new List<IFilter>() { new WarpFilter(WarpEffect.Twister, 0.50) }
                         };
-                        _customEffect = new PsychedelicEffect(imageEffect, 50);
+                        m_CustomEffect = new PsychedelicEffect(imageEffect, 50);
                     }
                     break;
 
                 case 32:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "SkipPixelEffect - RowSkip: 3 | ColumnSkip: 3");
-                        _customEffect = new SkipPixelEffect(_cameraPreviewImageSource, 3, 3);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "SkipPixelEffect - RowSkip: 3 | ColumnSkip: 3");
+                        m_CustomEffect = new SkipPixelEffect(m_StreamImageSource, 3, 3);
                     }
                     break;
 
                 case 33:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "SkipPixelEffect - RowSkip: 8 | ColumnSkip: 8");
-                        _customEffect = new SkipPixelEffect(_cameraPreviewImageSource, 8, 8);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "SkipPixelEffect - RowSkip: 8 | ColumnSkip: 8");
+                        m_CustomEffect = new SkipPixelEffect(m_StreamImageSource, 8, 8);
                     }
                     break;
 
                 case 34:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "SkipPixelEffect - RowSkip: 13 | ColumnSkip: 13");
-                        _customEffect = new SkipPixelEffect(_cameraPreviewImageSource, 13, 13);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "SkipPixelEffect - RowSkip: 13 | ColumnSkip: 13");
+                        m_CustomEffect = new SkipPixelEffect(m_StreamImageSource, 13, 13);
                     }
                     break;
 
                 case 35:
                     {
                         //// Dismal performance without Cache
-                        //EffectName = String.Format(nameFormat, (_effectIndex + 1), "QuantizeColorEffect without Cache - 16 color");
+                        //EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "QuantizeColorEffect without Cache - 16 color");
                         //Dictionary<uint, Color> assignedColorCache = null;
-                        //_customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref assignedColorCache,
+                        //_customEffect = new QuantizeColorEffect(m_StreamImageSource, ref assignedColorCache,
                         //    null, QuantizeColorEffect.ColorPalette.Color16);
 
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Inbuilt CartoonFilter");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Inbuilt CartoonFilter");
                         filters.Add(new CartoonFilter());
                     }
                     break;
 
                 case 36:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "QuantizeColorEffect with Cache - Half of Web Safe Colors");
-                        _customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref App.AssignedColorCache,
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "QuantizeColorEffect with Cache - Half of Web Safe Colors");
+                        m_CustomEffect = new QuantizeColorEffect(m_StreamImageSource, ref App.AssignedColorCache,
                             null, QuantizeColorEffect.ColorPalette.WebSafeHalf);
                     }
                     break;
 
                 case 37:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "QuantizeColorEffect with Cache - Web Safe Colors");
-                        _customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref App.AssignedColorCache,
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "QuantizeColorEffect with Cache - Web Safe Colors");
+                        m_CustomEffect = new QuantizeColorEffect(m_StreamImageSource, ref App.AssignedColorCache,
                             null, QuantizeColorEffect.ColorPalette.WebSafe);
                     }
                     break;
 
                 case 38:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "QuantizeColorEffect with Cache - X11 Colors");
-                        _customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref App.AssignedColorCache,
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "QuantizeColorEffect with Cache - X11 Colors");
+                        m_CustomEffect = new QuantizeColorEffect(m_StreamImageSource, ref App.AssignedColorCache,
                             null, QuantizeColorEffect.ColorPalette.X11);
                     }
                     break;
 
                 case 39:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "QuantizeColorEffect with Cache - 16 Colors");
-                        _customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref App.AssignedColorCache,
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "QuantizeColorEffect with Cache - 16 Colors");
+                        m_CustomEffect = new QuantizeColorEffect(m_StreamImageSource, ref App.AssignedColorCache,
                             null, QuantizeColorEffect.ColorPalette.Color16);
                     }
                     break;
@@ -492,68 +492,68 @@ namespace RealtimeFilterDemo
                         targetColors.Add(0xff000000 | (70 << 16) | (130 << 8) | 180); // SteelBlue
                         targetColors.Add(0xff000000 | (250 << 16) | (235 << 8) | 215); // AntiqueWhite
 
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "QuantizeColorEffect with Cache - Custom Colors");
-                        _customEffect = new QuantizeColorEffect(_cameraPreviewImageSource, ref App.AssignedColorCache, targetColors);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "QuantizeColorEffect with Cache - Custom Colors");
+                        m_CustomEffect = new QuantizeColorEffect(m_StreamImageSource, ref App.AssignedColorCache, targetColors);
                     }
                     break;
 
                 case 41:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Built-in SepiaFilter");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Built-in SepiaFilter");
                         filters.Add(new SepiaFilter());
                     }
                     break;
 
                 case 42:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom SepiaEffect - 0.42 (default)");
-                        _customEffect = new SepiaEffect(_cameraPreviewImageSource, 0.42);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom SepiaEffect - 0.42 (default)");
+                        m_CustomEffect = new SepiaEffect(m_StreamImageSource, 0.42);
                     }
                     break;
 
                 case 43:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom SepiaEffect - 0.32");
-                        _customEffect = new SepiaEffect(_cameraPreviewImageSource, 0.32);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom SepiaEffect - 0.32");
+                        m_CustomEffect = new SepiaEffect(m_StreamImageSource, 0.32);
                     }
                     break;
 
                 case 44:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom SepiaEffect - 0.62");
-                        _customEffect = new SepiaEffect(_cameraPreviewImageSource, 0.62);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom SepiaEffect - 0.62");
+                        m_CustomEffect = new SepiaEffect(m_StreamImageSource, 0.62);
                     }
                     break;
 
                 case 45:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom CannyEdgeDetection");
-                        _customEffect = new CannyEdgeDetection(_cameraPreviewImageSource);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom CannyEdgeDetection");
+                        m_CustomEffect = new CannyEdgeDetection(m_StreamImageSource);
                     }
                     break;
 
                 case 46:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom OtsuThresholdEffect");
-                        _customEffect = new OtsuThresholdEffect(_cameraPreviewImageSource);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom OtsuThresholdEffect");
+                        m_CustomEffect = new OtsuThresholdEffect(m_StreamImageSource);
                     }
                     break;
 
                 case 47:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom SobelEdgeDetection");
-                        _customEffect = new SobelEdgeDetection(_cameraPreviewImageSource);
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom SobelEdgeDetection");
+                        m_CustomEffect = new SobelEdgeDetection(m_StreamImageSource);
                     }
                     break;
 
                 case 48:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom BlobCounter");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom BlobCounter");
 
                         //CannyEdgeDetection gives better performance but sobel is much faster
-                        var sobelDetection = new OtsuThresholdEffect(_cameraPreviewImageSource);
+                        var sobelDetection = new OtsuThresholdEffect(m_StreamImageSource);
 
-                        _customEffect = new BlobCounter(sobelDetection)
+                        m_CustomEffect = new BlobCounter(sobelDetection)
                         {
                             //Draws detected objects as rectangle, for more information http://www.aforgenet.com/articles/shape_checker/
                             HasPreview = true,
@@ -566,7 +566,7 @@ namespace RealtimeFilterDemo
 
                 case 49:
                     {
-                        EffectName = String.Format(nameFormat, (_effectIndex + 1), "Custom QuadTransformation");
+                        EffectName = String.Format(nameFormat, (m_EffectIndex + 1), "Custom QuadTransformation");
 
                         NISDKExtendedEffects.Entities.EdgePoints points = new NISDKExtendedEffects.Entities.EdgePoints()
                         {
@@ -594,11 +594,11 @@ namespace RealtimeFilterDemo
 
                         var estimatedSize = points.EstimatedRectangleSize();
 
-                        var customEffect = new QuadTransformation(_cameraPreviewImageSource, estimatedSize, NISDKExtendedEffects.Entities.QuadDirection.QuadToRect, points);
+                        var customEffect = new QuadTransformation(m_StreamImageSource, estimatedSize, NISDKExtendedEffects.Entities.QuadDirection.QuadToRect, points);
 
                         var reframingFilter = new ReframingFilter(new Windows.Foundation.Rect(0, 0, estimatedSize.Width, estimatedSize.Height), 0);
 
-                        _filterEffect = new FilterEffect(customEffect)
+                        m_FilterEffect = new FilterEffect(customEffect)
                         {
                             Filters = new IFilter[] { reframingFilter }
                         };
@@ -608,13 +608,13 @@ namespace RealtimeFilterDemo
 
             if (filters.Count > 0)
             {
-                _filterEffect = new FilterEffect(_cameraPreviewImageSource)
+                m_FilterEffect = new FilterEffect(m_StreamImageSource)
                 {
                     Filters = filters
                 };
             }
         }
 
-        private int _effectCount = 50;  // Remember to increment by one with each case added above.
+        private int m_EffectCount = 50;  // Remember to increment by one with each case added above.
     }
 }
