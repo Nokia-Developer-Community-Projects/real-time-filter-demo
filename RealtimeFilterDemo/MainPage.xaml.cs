@@ -15,6 +15,7 @@ using System.Threading;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Navigation;
+using Windows.Foundation;
 using Windows.Phone.Media.Capture;
 
 namespace RealtimeFilterDemo
@@ -96,12 +97,43 @@ namespace RealtimeFilterDemo
                     canvasAngle = _photoCaptureDevice.SensorRotationInDegrees;
                 }
 
-                BackgroundVideoBrush.RelativeTransform = new RotateTransform()
-                {
-                    CenterX = 0.5,
-                    CenterY = 0.5,
-                    Angle = canvasAngle
-                };
+
+
+                var tmptransform = new RotateTransform() { Angle = canvasAngle };
+                var previewSize = tmptransform.TransformBounds(
+                    new System.Windows.Rect(
+                        new System.Windows.Point(),
+                        new System.Windows.Size(_photoCaptureDevice.PreviewResolution.Width, _photoCaptureDevice.PreviewResolution.Height)
+                        )
+                );
+
+
+
+                double s1 = viewfinderCanvas.ActualWidth / previewSize.Width;
+                double s2 = viewfinderCanvas.ActualHeight / previewSize.Height;
+
+                //video center match Viewfinder canvas center center
+                BackgroundVideoBrush.AlignmentX = AlignmentX.Center;
+                BackgroundVideoBrush.AlignmentY = AlignmentY.Center;
+
+                //Don't use a strech strategie.
+                BackgroundVideoBrush.Stretch = Stretch.None;
+
+             
+                double scale = Math.Max(s1, s2); //UniformFill
+               // double scale = Math.Min(s1, s2); // Uniform
+
+
+                 if (_photoCaptureDevice.SensorLocation == CameraSensorLocation.Back)
+                 {
+                     BackgroundVideoBrush.Transform = new CompositeTransform() { Rotation = canvasAngle, CenterX = viewfinderCanvas.ActualWidth / 2, CenterY = viewfinderCanvas.ActualHeight / 2, ScaleX = scale, ScaleY = scale };
+                 }
+                 else
+                 {
+                     //Front viewfinder need to be flipped
+                     BackgroundVideoBrush.Transform = new CompositeTransform() { Rotation = canvasAngle, CenterX = viewfinderCanvas.ActualWidth / 2, CenterY = viewfinderCanvas.ActualHeight / 2, ScaleX = -scale, ScaleY = scale };
+                 }
+
 
                 _photoCaptureDevice.SetProperty(KnownCameraGeneralProperties.EncodeWithOrientation, canvasAngle);
             }
@@ -111,9 +143,12 @@ namespace RealtimeFilterDemo
         {
             StatusTextBlock.Text = AppResources.MainPage_StatusTextBlock_StartingCamera;
 
-            var resolution = PhotoCaptureDevice.GetAvailablePreviewResolutions(CameraSensorLocation.Back).Last();
+            var camera = CameraSensorLocation.Back;
+          //  var camera = CameraSensorLocation.Front;
 
-            _photoCaptureDevice = await PhotoCaptureDevice.OpenAsync(CameraSensorLocation.Back, resolution);
+            var resolution = PhotoCaptureDevice.GetAvailablePreviewResolutions(camera).Last();
+
+            _photoCaptureDevice = await PhotoCaptureDevice.OpenAsync(camera, resolution);
 
             await _photoCaptureDevice.SetPreviewResolutionAsync(resolution);
 
@@ -124,7 +159,6 @@ namespace RealtimeFilterDemo
             _cameraStreamSource.FrameRateChanged += CameraStreamSource_FPSChanged;
 
             _mediaElement = new MediaElement();
-            _mediaElement.Stretch = Stretch.UniformToFill;
             _mediaElement.BufferingTime = new TimeSpan(0);
             _mediaElement.SetSource(_cameraStreamSource);
 
